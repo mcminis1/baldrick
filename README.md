@@ -3,8 +3,7 @@
 
 ## Setup
 
-Create an app in a workspace in your [console](https://api.slack.com/apps).
-
+Following the [bolt_python quickstart](https://slack.dev/bolt-python/tutorial/getting-started), you'll need to create an app, get your credentials, and set up permissions.
 
 ## Install and run
 
