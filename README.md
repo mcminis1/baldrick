@@ -57,7 +57,6 @@ uvicorn src:app --reload --port 3000 --log-level debug
 
 ## Deploy to Google Cloud Run
 
-
 1. [install gcloud](https://cloud.google.com/sdk/docs/install)
 2. [quickstart for Python](https://cloud.google.com/run/docs/quickstarts/build-and-deploy/deploy-python-service)
 
@@ -65,12 +64,39 @@ To deploy from source
 ```python
 gcloud run deploy baldrick --source .
 ```
-If you have to update the secret/env params
-```python
-gcloud run services update baldrick --update-secrets=KEY1=VALUE1,KEY2=VALUE2
-```
 
-allow access to secrets:
+Using the Google UI to set up secrets was easiest for us.
+
+Configure secret access:
 ```bash
 gcloud run services update baldrick --set-secrets="OPENAI_API_KEY=OPENAI_API_KEY:latest,SLACK_SIGNING_SECRET=SLACK_SIGNING_SECRET:latest,SLACK_BOT_TOKEN=SLACK_BOT_TOKEN:latest"
 ```
+
+If you're going to set up CICD with github actions, note that the permissions you actually need differ from the [instructions](https://github.com/google-github-actions/deploy-cloudrun)
+
+You'll need these roles:
+- Artifact Registry Administrator
+- Cloud Build Editor
+- Cloud Run Admin
+- Service Account Token Creator
+- Service Account User
+- Service Usage Consumer
+- Storage Admin
+- Storage Object Admin
+- Workload Identity User 
+
+The easiest way to add them is using the CLI:
+- role: roles/artifactregistry.admin
+- role: roles/cloudbuild.builds.editor
+- role: roles/iam.serviceAccountTokenCreator
+- role: roles/iam.serviceAccountUser
+- role: roles/iam.workloadIdentityUser
+- role: roles/run.admin
+- role: roles/serviceusage.serviceUsageConsumer
+- role: roles/storage.admin
+- role: roles/storage.objectAdmin
+
+```bash
+gcloud projects add-iam-policy-binding project_id --member="serviceAccount:account_name@project_id.iam.gserviceaccount.com" --role="roles/this-role"
+```
+And you'll need to add the service account email to the bucket where the build happens.
