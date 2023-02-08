@@ -5,6 +5,47 @@
 
 Following the [bolt_python quickstart](https://slack.dev/bolt-python/tutorial/getting-started), you'll need to create an app, get your credentials, and set up permissions.
 
+## App Manifest
+
+```yaml
+display_information:
+  name: baldrick
+  description: Your SQL dogsbody
+  background_color: "#474e66"
+features:
+  bot_user:
+    display_name: baldrick
+    always_online: true
+  slash_commands:
+    - command: /baldrick
+      url: https://{{ your host }}/slack/events
+      description: ask baldrick a question
+      usage_hint: ask baldrick to query your data warehouse for an answer
+      should_escape: true
+oauth_config:
+  scopes:
+    bot:
+      - app_mentions:read
+      - channels:history
+      - chat:write
+      - commands
+      - mpim:history
+settings:
+  event_subscriptions:
+    request_url: https://{{ your host }}/slack/events
+    bot_events:
+      - app_mention
+      - message.channels
+      - message.mpim
+  interactivity:
+    is_enabled: true
+    request_url: https://{{ your host }}/slack/events
+  org_deploy_enabled: false
+  socket_mode_enabled: false
+  token_rotation_enabled: false
+```
+
+
 ## Local Dev
 
 ```bash
@@ -31,6 +72,5 @@ gcloud run services update baldrick --update-secrets=KEY1=VALUE1,KEY2=VALUE2
 
 allow access to secrets:
 ```bash
-gcloud run services update baldrick --set-secrets="SLACK_SIGNING_SECRET=SLACK_SIGNING_SECRET:latest,SLACK_BOT_TOKEN=SLACK_BOT_TOKEN:latest"
-gcloud run services update baldrick --set-secrets="OPENAI_API_KEY=OPENAI_API_KEY:latest"
+gcloud run services update baldrick --set-secrets="OPENAI_API_KEY=OPENAI_API_KEY:latest,SLACK_SIGNING_SECRET=SLACK_SIGNING_SECRET:latest,SLACK_BOT_TOKEN=SLACK_BOT_TOKEN:latest"
 ```
