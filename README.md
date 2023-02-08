@@ -45,14 +45,13 @@ settings:
   token_rotation_enabled: false
 ```
 
-
 ## Local Dev
 
 ```bash
 pip install -r requirements.txt
 export SLACK_SIGNING_SECRET=***
 export SLACK_BOT_TOKEN=xoxb-***
-uvicorn src:app --reload --port 3000 --log-level debug
+uvicorn src.app:api --reload --port 3000 --log-level debug
 ```
 
 ## Deploy to Google Cloud Run
