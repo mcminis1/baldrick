@@ -125,7 +125,7 @@ final_df = (
     .reset_index(drop=True)
     .reset_index()
     .rename(columns={"index": "activity_id"})
-    .astype({"activity_id": str, 'feature_json': str})
+    .astype({"activity_id": str, "feature_json": str})
 )
 
 

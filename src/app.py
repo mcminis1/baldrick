@@ -11,9 +11,10 @@ logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 app = AsyncApp(
     token=os.environ.get("SLACK_BOT_TOKEN"),
-    signing_secret=os.environ.get("SLACK_SIGNING_SECRET")
+    signing_secret=os.environ.get("SLACK_SIGNING_SECRET"),
 )
 app_handler = AsyncSlackRequestHandler(app)
+
 
 @app.command("/baldrick")
 async def handle_some_command(ack, command, respond):
@@ -21,30 +22,38 @@ async def handle_some_command(ack, command, respond):
     await ack()
     await respond(f"{command['text']}")
 
+
 @app.event("message")
 async def handle_message_events(body, logger):
     logger.debug(body)
     pass
 
+
 class VALID_QUERY_RESPONSE:
     def __init__(self, activities, llm_query, llm_query_plan, data):
-        self.activities=activities
+        self.activities = activities
         self.llm_query = llm_query
         self.llm_query_plan = llm_query_plan
         self.data = data
+
     def __str__(self):
         return f" activities:\n {self.activities}\n\n query:\n {self.llm_query}\n\n query plan:\n {self.llm_query_plan}\n\n results: {self.data}"
+
     def __repr__(self):
         return str(self)
 
+
 class INVALID_QUERY_RESPONSE:
     def __init__(self, activities, llm_query):
-        self.activities=activities
+        self.activities = activities
         self.llm_query = llm_query
+
     def __str__(self):
         return f" activities:\n {self.activities}\n\n query:\n {self.llm_query}\n\n query plan is invalid"
+
     def __repr__(self):
         return str(self)
+
 
 @app.event("app_mention")
 async def handle_app_mentions(body, say, logger):
@@ -62,6 +71,7 @@ async def handle_app_mentions(body, say, logger):
 
 
 api = FastAPI()
+
 
 @api.post("/slack/events")
 async def endpoint(req: Request):
