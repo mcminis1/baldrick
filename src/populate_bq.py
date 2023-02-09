@@ -12,6 +12,24 @@ client = bigquery.Client()
 dataset_id = "baldrick.doodad_inc"
 table_id = dataset_id + ".customer_stream"
 
+query = f"""
+    CREATE TABLE IF NOT EXISTS {table_id}
+    (
+        activity_id STRING NOT NULL,
+        ts TIMESTAMP NOT NULL,
+        customer STRING,
+        activity STRING,
+        feature_json JSON,
+    )
+    PARTITION BY TIMESTAMP_TRUNC(ts, MONTH)
+    CLUSTER BY customer
+    OPTIONS (
+        description="an activity stream of customer interaction"
+    );
+"""
+job = client.query(query)
+job.result()
+
 Faker.seed(1334)
 fake = Faker()
 
