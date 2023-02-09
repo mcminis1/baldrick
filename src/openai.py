@@ -48,6 +48,9 @@ Question: {self.user_question.strip(' \n')}"""
     def __repr__(self) -> str:
         return str(self)
 
+    def to_str(self) -> str:
+        return str(self)
+
 
 class EVENT_CHOOSER_PROMPT:
     def __init__(self, user_question, event_names):
@@ -62,12 +65,15 @@ Relevant Event Names:"""
 
     def __repr__(self) -> str:
         return str(self)
+    
+    def to_str(self) -> str:
+        return str(self)
 
 
 async def get_relevant_activities(user_question) -> str:
     completion = await openai.Completion.create(
         engine="text-davinci-003",
-        prompt=EVENT_CHOOSER_PROMPT(user_question, event_names),
+        prompt=EVENT_CHOOSER_PROMPT(user_question, event_names).to_str(),
     )
     return completion
 
@@ -77,7 +83,7 @@ async def get_sql_query(user_question, activities) -> str:
         engine="text-davinci-003",
         prompt=QUERY_PROMPT(
             top_k, table_info, activities, activity_schema, user_question
-        ),
+        ).to_str(),
     )
     # need to parse the output according to the prompt and return multiple parts
     # e.g. (SQLQuery, SQLResult, Answer) from the QUERY_PROMPT
