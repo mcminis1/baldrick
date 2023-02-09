@@ -7,16 +7,18 @@ project_id = os.environ.get("PROJECT_ID")
 dataset = os.environ.get("DATASET")
 table = os.environ.get("TABLE")
 
-def get_query_plan(query:str) -> str:
-    f_query = query.replace('EVENT_SCHEMA', f'`{project_id}.{dataset}.{table}`')
+
+def get_query_plan(query: str) -> str:
+    f_query = query.replace("EVENT_SCHEMA", f"`{project_id}.{dataset}.{table}`")
     config = bigquery.QueryJobConfig(dry_run=True)
-    results = client.query(f_query, config).query_plan
-    if results:
-        return '\n'.join(results)
+    results = client.query(f_query, config)
+    if results.errors is None:
+        return "\n".join(results)
     return None
 
-def run_query(query:str) -> dict:
-    f_query = query.replace('EVENT_SCHEMA', f'`{project_id}.{dataset}.{table}`')
+
+def run_query(query: str) -> dict:
+    f_query = query.replace("EVENT_SCHEMA", f"`{project_id}.{dataset}.{table}`")
     logging.debug(f_query)
     results = client.query(f_query).to_dataframe()
     return results.to_json()
