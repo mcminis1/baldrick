@@ -43,7 +43,7 @@ Only use the following table:
 where the activity is one of {self.activities}
 and the activity schemas are:
 {self.activity_schema}
-Question: {self.user_question.strip(' \n')}"""
+Question: {self.user_question.strip(' ')}"""
 
     def __repr__(self) -> str:
         return str(self)
