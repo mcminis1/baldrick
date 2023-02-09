@@ -1,6 +1,6 @@
 import os
 import openai
-
+import logging
 openai.api_key = os.environ.get("OPENAI_API_KEY")
 
 top_k = 100
@@ -74,8 +74,11 @@ async def get_relevant_activities(user_question) -> str:
     completion = await openai.Completion.acreate(
         engine="text-davinci-003",
         prompt=EVENT_CHOOSER_PROMPT(user_question, event_names).to_str(),
+        max_tokens=512,
+        temperature=0,
     )
-    return completion
+    logging.debug(completion)
+    return completion["choices"]["text"]
 
 
 async def get_sql_query(user_question, activities) -> str:
@@ -84,7 +87,10 @@ async def get_sql_query(user_question, activities) -> str:
         prompt=QUERY_PROMPT(
             top_k, table_info, activities, activity_schema, user_question
         ).to_str(),
+        max_tokens=512,
+        temperature=0,
     )
+    logging.debug(completion)
     # need to parse the output according to the prompt and return multiple parts
     # e.g. (SQLQuery, SQLResult, Answer) from the QUERY_PROMPT
-    return completion
+    return completion["choices"]["text"]
