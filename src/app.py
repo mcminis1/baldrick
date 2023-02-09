@@ -29,7 +29,7 @@ async def handle_message_events(body, logger):
 async def handle_app_mentions(body, say, logger):
     logging.debug(f"/handle_app_mentions")
     logger.info(body)
-    data = run_query("select count * from EVENT_SCHEMA")
+    data = get_query_plan("select count(*) from EVENT_SCHEMA")
     await say(f"app_mention: {data}")
 
 
