@@ -1,4 +1,5 @@
 from datetime import timedelta, date
+import argparse
 
 from faker import Faker
 import numpy as np
@@ -9,6 +10,7 @@ from google.cloud import bigquery
 client = bigquery.Client()
 
 dataset_id = "baldrick.doodad_inc"
+table_id = dataset_id + ".customer_stream"
 
 Faker.seed(1334)
 fake = Faker()
@@ -35,9 +37,10 @@ customers = {
 # list of fictitious webpages
 pages = ["/contact", "/home", "/about", "/products"]
 
-# creation of an activity stream of customer interactions
+# activity stream of customer interactions
 cust_act_df = pd.DataFrame(columns=["ts", "customer", "activity", "feature_json"])
 
+# Generate DF of randomly generated customer interactions
 for cust, info in customers.items():
     activities = ["Visited Page", "Placed Order", "Contacted Support"]
 
@@ -98,6 +101,7 @@ for cust, info in customers.items():
                 temp_df["feature_json"] = [feats]
                 cust_act_df = pd.concat([cust_act_df, temp_df], ignore_index=True)
 
+# Sort data by time and reset index to get an ordered activity_id
 final_df = (
     cust_act_df.sort_values(by="ts")
     .reset_index(drop=True)
@@ -105,7 +109,7 @@ final_df = (
     .rename(columns={"index": "activity_id"})
     .astype({"activity_id": str, 'feature_json': str})
 )
-final_df.loc[final_df["activity"] == "Returned Item", :]
+
 
 job_config = bigquery.LoadJobConfig(
     # Specify a (partial) schema. All columns are always written to the
@@ -122,11 +126,8 @@ job_config = bigquery.LoadJobConfig(
     write_disposition="WRITE_TRUNCATE",
 )
 
-
-table_id = dataset_id + ".customer_stream"
-
+# Populate table from pandas DF
 job = client.load_table_from_dataframe(final_df, table_id, job_config=job_config)
-
 job.result()
 
 table = client.get_table(table_id)  # Make an API request.
