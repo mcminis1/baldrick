@@ -4,6 +4,7 @@ import os
 from slack_bolt.async_app import AsyncApp
 from slack_bolt.adapter.fastapi.async_handler import AsyncSlackRequestHandler
 from fastapi import FastAPI, Request
+from .bigquery import run_query, get_query_plan
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
@@ -25,10 +26,11 @@ async def handle_message_events(body, logger):
     pass
 
 @app.event("app_mention")
-async def handle_app_mentions(context, say, logger):
+async def handle_app_mentions(body, say, logger):
     logging.debug(f"/handle_app_mentions")
-    logger.info(context)
-    await say("app_mention")
+    logger.info(body)
+    data = run_query("select count * from EVENT_SCHEMA")
+    await say(f"app_mention: {data}")
 
 
 api = FastAPI()

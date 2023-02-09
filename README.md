@@ -71,6 +71,12 @@ Configure secret access:
 gcloud run services update baldrick --set-secrets="OPENAI_API_KEY=OPENAI_API_KEY:latest,SLACK_SIGNING_SECRET=SLACK_SIGNING_SECRET:latest,SLACK_BOT_TOKEN=SLACK_BOT_TOKEN:latest"
 ```
 
+Configure environment variables
+```bash
+gcloud run services update baldrick --set-env-vars=PROJECT_ID=PROJECT_ID,DATASET=DATASET,TABLE=TABLE
+```
+
+
 If you're going to set up CICD with github actions, note that the permissions you actually need differ from the [instructions](https://github.com/google-github-actions/deploy-cloudrun)
 
 You'll need these roles:
