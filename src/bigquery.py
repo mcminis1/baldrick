@@ -9,8 +9,9 @@ table = os.environ.get("TABLE")
 
 def get_query_plan(query:str) -> str:
     f_query = query.replace('EVENT_SCHEMA', f'`{project_id}.{dataset}.{table}`')
-    results = client.query("EXPLAIN " + f_query)
-    return str(results)
+    config = bigquery.QueryJobConfig(dry_run=True)
+    results = client.query(f_query, config).query_plan
+    return '\n'.join(results)
 
 def run_query(query:str) -> dict:
     f_query = query.replace('EVENT_SCHEMA', f'`{project_id}.{dataset}.{table}`')
