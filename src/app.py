@@ -59,9 +59,9 @@ class INVALID_QUERY_RESPONSE:
 async def handle_app_mentions(body, say, logger):
     logging.debug(f"/handle_app_mentions")
     logger.debug(body)
-    user_question = await body["event"]["text"]
-    activities = get_relevant_activities(user_question)
-    query = get_sql_query(user_question, activities)
+    user_question = str(body["event"]["text"])
+    activities = await get_relevant_activities(user_question)
+    query = await get_sql_query(user_question, activities)
     query_plan = get_query_plan(query)
     if query_plan:
         data = run_query(query)
