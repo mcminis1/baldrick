@@ -11,7 +11,9 @@ def get_query_plan(query:str) -> str:
     f_query = query.replace('EVENT_SCHEMA', f'`{project_id}.{dataset}.{table}`')
     config = bigquery.QueryJobConfig(dry_run=True)
     results = client.query(f_query, config).query_plan
-    return '\n'.join(results)
+    if results:
+        return '\n'.join(results)
+    return None
 
 def run_query(query:str) -> dict:
     f_query = query.replace('EVENT_SCHEMA', f'`{project_id}.{dataset}.{table}`')
