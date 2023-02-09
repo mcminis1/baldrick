@@ -71,7 +71,7 @@ Relevant Event Names:"""
 
 
 async def get_relevant_activities(user_question) -> str:
-    completion = await openai.Completion.create(
+    completion = await openai.Completion.acreate(
         engine="text-davinci-003",
         prompt=EVENT_CHOOSER_PROMPT(user_question, event_names).to_str(),
     )
@@ -79,7 +79,7 @@ async def get_relevant_activities(user_question) -> str:
 
 
 async def get_sql_query(user_question, activities) -> str:
-    completion = await openai.Completion.create(
+    completion = await openai.Completion.acreate(
         engine="text-davinci-003",
         prompt=QUERY_PROMPT(
             top_k, table_info, activities, activity_schema, user_question
