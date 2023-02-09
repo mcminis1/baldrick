@@ -30,7 +30,7 @@ class QUERY_PROMPT:
         self.user_question = user_question
 
     def __str__(self) -> str:
-        return """Given an input question, first create a syntactically correct BigQuery query to run, then look at the results of the query and return the answer. Unless the user specifies in his question a specific number of examples he wishes to obtain, always limit your query to at most {self.top_k} results using the LIMIT clause. You can order the results by a relevant column to return the most interesting examples in the database.
+        return f"""Given an input question, first create a syntactically correct BigQuery query to run, then look at the results of the query and return the answer. Unless the user specifies in his question a specific number of examples he wishes to obtain, always limit your query to at most {self.top_k} results using the LIMIT clause. You can order the results by a relevant column to return the most interesting examples in the database.
 Never query for all the columns from a specific table, only ask for a the few relevant columns given the question.
 Pay attention to use only the column names that you can see in the schema description. Be careful to not query for columns that do not exist. Also, pay attention to which column is in which table.
 Use the following format:
@@ -58,7 +58,7 @@ class EVENT_CHOOSER_PROMPT:
         self.event_names = event_names
 
     def __str__(self) -> str:
-        return """Given the below input question and list of potential events, output a comma separated list of the event names that may be necessary to answer this question.
+        return f"""Given the below input question and list of potential events, output a comma separated list of the event names that may be necessary to answer this question.
 Question: {self.user_question}
 Event Names: {', '.join(self.event_names)}
 Relevant Event Names:"""
