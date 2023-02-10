@@ -1,4 +1,5 @@
 from datetime import timedelta, date
+import json
 
 from faker import Faker
 import numpy as np
@@ -36,6 +37,7 @@ num_customers = 200
 num_products = 30
 max_interactions = 100
 min_interactions = 5
+non_conversion_ids = num_customers + 0.33
 
 # list of products with price
 products = {
@@ -46,13 +48,10 @@ products = {
     for _ in range(num_products)
 }
 
-domains = [fake.domain() for _ in range(num_customers + 2)]
-
-anon_id = [fake.uuid() for _ in range(num_customers + (num_customers * 0.5))]
 
 # list of customers with personal info
 customers = {
-    fake.email(domain = domains.pop()): (
+    fake.email(domain=fake.domain_name()): (
         fake.name(),
         fake.address(),
         fake.date_of_birth(minimum_age=18, maximum_age=88),
@@ -66,13 +65,62 @@ pages = ["/contact", "/home", "/about", "/products"]
 # activity stream of customer interactions
 cust_act_df = pd.DataFrame(columns=["ts", "customer", "activity", "feature_json"])
 
+
+def ACTIVITY_HANDLER(activity, cust, ts):
+
+    if activity == "Visited Page":
+        feats = {"URL": np.random.choice(pages)}
+        temp_df = pd.DataFrame(
+            {"ts": ts, "customer": cust, "activity": activity},
+            index=pd.RangeIndex(1),
+        )
+        temp_df["feature_json"] = [feats]
+
+    elif activity == "Placed Order":
+        prod = np.random.choice(list(products.keys()))
+        feats = {"product": prod, "price": products[prod]}
+        temp_df = pd.DataFrame(
+            {"ts": ts, "customer": cust, "activity": activity},
+            index=pd.RangeIndex(1),
+        )
+        temp_df["feature_json"] = [feats]
+
+        if np.random.choice([True, False], p=[1 / 10, 9 / 10]):
+            ret_ts = ts + timedelta(days=np.random.randint(1, 8))
+
+            if ret_ts.date() <= date.today():
+                activity = "Returned Item"
+                feats = {"product": prod, "price": products[prod]}
+                temp_df = pd.DataFrame(
+                    {"ts": ret_ts, "customer": cust, "activity": activity},
+                    index=pd.RangeIndex(1),
+                )
+                temp_df["feature_json"] = [feats]
+
+    else:
+        feats = {"representative": fake.name(), "notes": fake.paragraph()}
+        temp_df = pd.DataFrame(
+            {"ts": ts, "customer": cust, "activity": activity},
+            index=pd.RangeIndex(1),
+        )
+        temp_df["feature_json"] = [feats]
+    
+    return temp_df
+
+
 # Generate DF of randomly generated customer interactions
 for cust, info in customers.items():
+    anon_id = fake.uuid4()
     activities = ["Visited Page", "Placed Order", "Contacted Support"]
 
     ts = fake.date_time_this_decade()
+    for _ in range(np.random.randint(low=1, high=5)):
+        
+        activity = np.random.choice(activities[:2])
+        cust_act_df = pd.concat([cust_act_df, ACTIVITY_HANDLER(activity, anon_id, ts)], ignore_index=True)
+
     init_activity = "Created Account"
-    init_features = {"name": info[0], "address": info[1], "birthdate": info[2]}
+    init_features = {"name": info[0], "address": info[1], "birthdate": info[2], 'anon_id': anon_id}
 
     temp_df = pd.DataFrame(
         {"ts": ts, "customer": cust, "activity": init_activity}, index=pd.RangeIndex(1)
@@ -84,48 +132,8 @@ for cust, info in customers.items():
         ts = ts + timedelta(days=np.random.randint(1, 11))
         if ts.date() <= date.today():
             activity = np.random.choice(activities, p=[1 / 2, 1 / 4, 1 / 4])
-
-            if activity == "Visited Page":
-                feats = {"URL": np.random.choice(pages)}
-                temp_df = pd.DataFrame(
-                    {"ts": ts, "customer": cust, "activity": activity},
-                    index=pd.RangeIndex(1),
-                )
-                temp_df["feature_json"] = [feats]
-                cust_act_df = pd.concat([cust_act_df, temp_df], ignore_index=True)
-
-            elif activity == "Placed Order":
-                prod = np.random.choice(list(products.keys()))
-                feats = {"product": prod, "price": products[prod]}
-                temp_df = pd.DataFrame(
-                    {"ts": ts, "customer": cust, "activity": activity},
-                    index=pd.RangeIndex(1),
-                )
-                temp_df["feature_json"] = [feats]
-                cust_act_df = pd.concat([cust_act_df, temp_df], ignore_index=True)
-
-                if np.random.choice([True, False], p=[1 / 10, 9 / 10]):
-                    ret_ts = ts + timedelta(days=np.random.randint(1, 8))
-
-                    if ret_ts.date() <= date.today():
-                        activity = "Returned Item"
-                        feats = {"product": prod, "price": products[prod]}
-                        temp_df = pd.DataFrame(
-                            {"ts": ts, "customer": cust, "activity": activity},
-                            index=pd.RangeIndex(1),
-                        )
-                        temp_df["feature_json"] = [feats]
-                        cust_act_df = pd.concat(
-                            [cust_act_df, temp_df], ignore_index=True
-                        )
-            else:
-                feats = {"representative": fake.name(), "notes": fake.paragraph()}
-                temp_df = pd.DataFrame(
-                    {"ts": ts, "customer": cust, "activity": activity},
-                    index=pd.RangeIndex(1),
-                )
-                temp_df["feature_json"] = [feats]
-                cust_act_df = pd.concat([cust_act_df, temp_df], ignore_index=True)
+              
+            cust_act_df = pd.concat([cust_act_df, ACTIVITY_HANDLER(activity, cust, ts)], ignore_index=True)
 
 # Sort data by time and reset index to get an ordered activity_id
 final_df = (
@@ -133,7 +141,7 @@ final_df = (
     .reset_index(drop=True)
     .reset_index()
     .rename(columns={"index": "activity_id"})
-    .astype({"activity_id": str, "feature_json": str})
+    .astype({"activity_id": str})
 )
 
 
