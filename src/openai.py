@@ -64,7 +64,7 @@ SQLResult: "Result of the SQLQuery"
 Answer: "Final answer here"
 Only use the following table:
 {self.table_info}
-where the activity is one of these strings: {'m'.join(self.activities)}
+where the activity is one of these strings: {', '.join(self.activities)}
 and the JSON schema for each of these activities is:
 {self.valid_activity_schema}
 
