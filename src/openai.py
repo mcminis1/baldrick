@@ -65,7 +65,7 @@ SQLResult: "Result of the SQLQuery"
 Answer: "Final answer here"
 Only use the following table:
 {self.table_info}
-where the activity is one of {self.activities}
+where the activity is one of {'m'.join(self.activities)}
 and the activity schemas are:
 {self.valid_activity_schema}
 Question: {self.user_question}"""
@@ -103,7 +103,7 @@ async def get_relevant_activities(user_question) -> str:
         temperature=0,
     )
     logging.debug(completion)
-    return completion["choices"]["text"]
+    return completion["choices"][0]["text"].strip().split(',')
 
 
 async def get_sql_query(user_question, activities) -> str:
@@ -118,4 +118,4 @@ async def get_sql_query(user_question, activities) -> str:
     logging.debug(completion)
     # need to parse the output according to the prompt and return multiple parts
     # e.g. (SQLQuery, SQLResult, Answer) from the QUERY_PROMPT
-    return completion["choices"]["text"]
+    return completion["choices"][0]["text"]
