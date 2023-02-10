@@ -103,7 +103,8 @@ async def get_relevant_activities(user_question) -> str:
         temperature=0,
     )
     logging.debug(completion)
-    return completion["choices"][0]["text"].strip().split(',')
+    activities = [x.strip() for x in completion["choices"][0]["text"].split(',')]
+    return activities
 
 
 async def get_sql_query(user_question, activities) -> str:
