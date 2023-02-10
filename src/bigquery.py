@@ -34,8 +34,11 @@ def run_query(query: str) -> dict:
             query_job = client.get_job(
                 query_job.job_id, location=query_job.location
             )
-        results = query_job.to_dataframe()
-        return results.to_json()
+        df = query_job.to_dataframe()
+        results = []
+        for _, row in df.iterrows():
+            results.append(row)
+        return results
     except Exception as e:
         logging.error(e)
     return None
