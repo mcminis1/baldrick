@@ -1,5 +1,4 @@
 from datetime import timedelta, date
-import argparse
 
 from faker import Faker
 import numpy as np
@@ -33,23 +32,32 @@ job.result()
 Faker.seed(1334)
 fake = Faker()
 
+num_customers = 200
+num_products = 30
+max_interactions = 100
+min_interactions = 5
+
 # list of products with price
 products = {
     fake.color_name()
     + np.random.choice([" Doodad", " Widget", " Thing-a-ma-bob"]): round(
         np.random.uniform(low=10, high=30), 2
     )
-    for _ in range(30)
+    for _ in range(num_products)
 }
+
+domains = [fake.domain() for _ in range(num_customers + 2)]
+
+anon_id = [fake.uuid() for _ in range(num_customers + (num_customers * 0.5))]
 
 # list of customers with personal info
 customers = {
-    fake.email(): (
+    fake.email(domain = domains.pop()): (
         fake.name(),
         fake.address(),
         fake.date_of_birth(minimum_age=18, maximum_age=88),
     )
-    for _ in range(200)
+    for _ in range(num_customers)
 }
 
 # list of fictitious webpages
@@ -72,7 +80,7 @@ for cust, info in customers.items():
     temp_df["feature_json"] = [init_features]
     cust_act_df = pd.concat([cust_act_df, temp_df], ignore_index=True)
 
-    for _ in range(np.random.randint(5, 100)):
+    for _ in range(np.random.randint(min_interactions, max_interactions)):
         ts = ts + timedelta(days=np.random.randint(1, 11))
         if ts.date() <= date.today():
             activity = np.random.choice(activities, p=[1 / 2, 1 / 4, 1 / 4])
@@ -132,12 +140,12 @@ final_df = (
 job_config = bigquery.LoadJobConfig(
     # Specify a (partial) schema. All columns are always written to the
     # table. The schema is used to assist in data type definitions.
-    schema=[
-        # Specify the type of columns whose type cannot be auto-detected. For
-        # example the "title" column uses pandas dtype "object", so its
-        # data type is ambiguous.
-        bigquery.SchemaField("feature_json", bigquery.enums.SqlTypeNames.STRING)
-    ],
+    # schema=[
+    #     # Specify the type of columns whose type cannot be auto-detected. For
+    #     # example the "title" column uses pandas dtype "object", so its
+    #     # data type is ambiguous.
+    #     bigquery.SchemaField("feature_json", bigquery.enums.SqlTypeNames.STRING)
+    # ],
     # Optionally, set the write disposition. BigQuery appends loaded rows
     # to an existing table by default, but with WRITE_TRUNCATE write
     # disposition it replaces the table with the loaded data.
