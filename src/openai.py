@@ -51,7 +51,8 @@ class QUERY_PROMPT:
         self.user_question = user_question.strip(' \n')
         valid_activity_schema = []
         for key in self.activities:
-            valid_activity_schema.append(self.activity_schema[key])
+            if key in self.activity_schema:
+                valid_activity_schema.append(self.activity_schema.get(key))
         self.valid_activity_schema = '\n'.join(valid_activity_schema)
 
     def __str__(self) -> str:
@@ -117,6 +118,13 @@ async def get_sql_query(user_question, activities) -> str:
         temperature=0,
     )
     logging.debug(completion)
+    response = completion["choices"][0]["text"]
+    start_query = response.find("SQLQuery:") + len("SQLQuery:")
+    end_query = response.find("SQLResult:")
+    start_answer = response.find("Answer:") + len("Answer:") + 1
+
+    query = response[start_query:end_query]
+    example_answer = response[start_answer:]
     # need to parse the output according to the prompt and return multiple parts
     # e.g. (SQLQuery, SQLResult, Answer) from the QUERY_PROMPT
-    return completion["choices"][0]["text"]
+    return query, example_answer

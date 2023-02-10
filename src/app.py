@@ -30,26 +30,28 @@ async def handle_message_events(body, logger):
 
 
 class VALID_QUERY_RESPONSE:
-    def __init__(self, activities, llm_query, llm_query_plan, data):
+    def __init__(self, activities, llm_query, llm_query_plan, example_answer, data):
         self.activities = activities
         self.llm_query = llm_query
         self.llm_query_plan = llm_query_plan
+        self.example_answer = example_answer
         self.data = data
 
     def __str__(self):
-        return f" activities:\n {self.activities}\n\n query:\n {self.llm_query}\n\n query plan:\n {self.llm_query_plan}\n\n results: {self.data}"
+        return f" activities:\n {self.activities}\n\n query:\n {self.llm_query}\n\n query plan:\n {self.llm_query_plan}\n\n example answer:\n {self.example_answer}\n\n results: {self.data}"
 
     def __repr__(self):
         return str(self)
 
 
 class INVALID_QUERY_RESPONSE:
-    def __init__(self, activities, llm_query):
+    def __init__(self, activities, llm_query, example_answer):
         self.activities = activities
         self.llm_query = llm_query
+        self.example_answer = example_answer
 
     def __str__(self):
-        return f" activities:\n {self.activities}\n\n query:\n {self.llm_query}\n\n query plan is invalid"
+        return f" activities:\n {self.activities}\n\n query:\n {self.llm_query}\n\n query plan is invalid\n\n example answer:\n {self.example_answer}"
 
     def __repr__(self):
         return str(self)
@@ -61,13 +63,13 @@ async def handle_app_mentions(body, say, logger):
     logger.debug(body)
     user_question = str(body["event"]["text"])
     activities = await get_relevant_activities(user_question)
-    query = await get_sql_query(user_question, activities)
+    query, example_answer = await get_sql_query(user_question, activities)
     query_plan = get_query_plan(query)
     if query_plan:
         data = run_query(query)
-        await say(VALID_QUERY_RESPONSE(activities, query, query_plan, data))
+        await say(VALID_QUERY_RESPONSE(activities, query, query_plan, example_answer, data))
     else:
-        await say(INVALID_QUERY_RESPONSE(activities, query))
+        await say(INVALID_QUERY_RESPONSE(activities, query, example_answer))
 
 
 api = FastAPI()
