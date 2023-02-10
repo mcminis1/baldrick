@@ -62,7 +62,8 @@ class INVALID_QUERY_RESPONSE:
 
 
 @app.event("app_mention")
-async def handle_app_mentions(body, say, logger):
+async def handle_app_mentions(ack, body, say, logger):
+    await ack()
     logging.debug(f"/handle_app_mentions")
     logger.debug(body)
     user_question = str(body["event"]["text"])
