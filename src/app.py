@@ -24,8 +24,9 @@ async def handle_some_command(ack, command, respond):
 
 
 @app.event("message")
-async def handle_message_events(body, logger):
-    logger.debug(body)
+async def handle_message_events(ack):
+    # , body, logger
+    await ack()
     pass
 
 
@@ -62,10 +63,8 @@ class INVALID_QUERY_RESPONSE:
 
 
 @app.event("app_mention")
-async def handle_app_mentions(ack, body, say, logger):
+async def handle_app_mentions(ack, body, say):
     await ack()
-    logging.debug(f"/handle_app_mentions")
-    logger.debug(body)
     user_question = str(body["event"]["text"])
     activities = await get_relevant_activities(user_question)
     query, example_answer = await get_sql_query(user_question, activities)
@@ -83,5 +82,4 @@ api = FastAPI()
 
 @api.post("/slack/events")
 async def endpoint(req: Request):
-    logging.debug("endpoint")
     return await app_handler.handle(req)
