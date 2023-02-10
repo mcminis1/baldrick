@@ -4,7 +4,7 @@ import os
 from slack_bolt.async_app import AsyncApp
 from slack_bolt.adapter.fastapi.async_handler import AsyncSlackRequestHandler
 from fastapi import FastAPI, Request
-from .openai import get_relevant_activities, get_sql_query
+from .openai import get_relevant_activities, get_sql_query, get_query_explanation
 from .bigquery import run_query, get_query_plan
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
@@ -70,8 +70,9 @@ async def handle_app_mentions(body, say, logger):
     query, example_answer = await get_sql_query(user_question, activities)
     query_plan = get_query_plan(query)
     if query_plan is not None:
+        query_explanation = await get_query_explanation(user_question, query)
         data = run_query(query)
-        await say(VALID_QUERY_RESPONSE(activities, query, query_plan, example_answer, data).to_str())
+        await say(VALID_QUERY_RESPONSE(activities, query, query_explanation, example_answer, data).to_str())
     else:
         await say(INVALID_QUERY_RESPONSE(activities, query, example_answer).to_str())
 

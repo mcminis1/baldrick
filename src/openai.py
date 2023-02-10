@@ -95,6 +95,27 @@ Relevant Event Names:"""
         return str(self)
 
 
+
+class QUERY_PLAN_EXPLANATION:
+    def __init__(self, user_question, query):
+        self.user_question = user_question
+        self.query = query
+
+    def __str__(self) -> str:
+        return f"""Explain to a CEO how the following SQL query will answer their business question. If there is a where clause explain it to them in simple terms.
+SQL Query:
+{self.query}
+Business Question:
+{self.user_question}
+Explanation:"""
+
+    def __repr__(self) -> str:
+        return str(self)
+    
+    def to_str(self) -> str:
+        return str(self)
+
+
 async def get_relevant_activities(user_question) -> str:
     completion = await openai.Completion.acreate(
         engine="text-davinci-003",
@@ -105,6 +126,17 @@ async def get_relevant_activities(user_question) -> str:
     logging.debug(completion)
     activities = [x.strip() for x in completion["choices"][0]["text"].split(',')]
     return activities
+
+async def get_query_explanation(user_question, sql_query) -> str:
+    completion = await openai.Completion.acreate(
+        engine="text-davinci-003",
+        prompt=QUERY_PLAN_EXPLANATION(user_question, sql_query).to_str(),
+        max_tokens=512,
+        temperature=0,
+    )
+    logging.debug(completion)
+    response = completion["choices"][0]["text"]
+    return response
 
 
 async def get_sql_query(user_question, activities) -> str:
