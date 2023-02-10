@@ -42,6 +42,8 @@ class VALID_QUERY_RESPONSE:
 
     def __repr__(self):
         return str(self)
+    def to_str(self) -> str:
+        return str(self)
 
 
 class INVALID_QUERY_RESPONSE:
@@ -55,6 +57,8 @@ class INVALID_QUERY_RESPONSE:
 
     def __repr__(self):
         return str(self)
+    def to_str(self) -> str:
+        return str(self)
 
 
 @app.event("app_mention")
@@ -67,9 +71,9 @@ async def handle_app_mentions(body, say, logger):
     query_plan = get_query_plan(query)
     if query_plan is not None:
         data = run_query(query)
-        await say(VALID_QUERY_RESPONSE(activities, query, query_plan, example_answer, data))
+        await say(VALID_QUERY_RESPONSE(activities, query, query_plan, example_answer, data).to_str())
     else:
-        await say(INVALID_QUERY_RESPONSE(activities, query, example_answer))
+        await say(INVALID_QUERY_RESPONSE(activities, query, example_answer).to_str())
 
 
 api = FastAPI()
