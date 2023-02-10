@@ -65,7 +65,7 @@ async def handle_app_mentions(body, say, logger):
     activities = await get_relevant_activities(user_question)
     query, example_answer = await get_sql_query(user_question, activities)
     query_plan = get_query_plan(query)
-    if query_plan:
+    if query_plan is not None:
         data = run_query(query)
         await say(VALID_QUERY_RESPONSE(activities, query, query_plan, example_answer, data))
     else:

@@ -11,13 +11,16 @@ table = os.environ.get("TABLE")
 def get_query_plan(query: str) -> str:
     f_query = query.replace("EVENT_SCHEMA", f"`{project_id}.{dataset}.{table}`")
     config = bigquery.QueryJobConfig(dry_run=True, priority=bigquery.QueryPriority.BATCH)
-    query_job = client.query(f_query, config)
-    while query_job.state != 'DONE':
-        query_job = client.get_job(
-            query_job.job_id, location=query_job.location
-        )
-    if query_job.errors is None:
-        return "\n".join(query_job.query_plan)
+    try:
+        query_job = client.query(f_query, config)
+        while query_job.state != 'DONE':
+            query_job = client.get_job(
+                query_job.job_id, location=query_job.location
+            )
+        if query_job.errors is None:
+            return "\n".join(query_job.query_plan)
+    except Exception as e:
+        logging.error(e)
     return None
 
 
@@ -25,10 +28,14 @@ def run_query(query: str) -> dict:
     f_query = query.replace("EVENT_SCHEMA", f"`{project_id}.{dataset}.{table}`")
     config = bigquery.QueryJobConfig(dry_run=False, priority=bigquery.QueryPriority.BATCH)
     logging.debug(f_query)
-    query_job = client.query(f_query, config)
-    while query_job.state != 'DONE':
-        query_job = client.get_job(
-            query_job.job_id, location=query_job.location
-        )
-    results = query_job.to_dataframe()
-    return results.to_json()
+    try:
+        query_job = client.query(f_query, config)
+        while query_job.state != 'DONE':
+            query_job = client.get_job(
+                query_job.job_id, location=query_job.location
+            )
+        results = query_job.to_dataframe()
+        return results.to_json()
+    except Exception as e:
+        logging.error(e)
+    return None
