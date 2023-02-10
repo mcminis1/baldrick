@@ -56,9 +56,7 @@ class QUERY_PROMPT:
         self.valid_activity_schema = '\n'.join(valid_activity_schema)
 
     def __str__(self) -> str:
-        return f"""Given an input question, first create a syntactically correct BigQuery query to run, then look at the results of the query and return the answer. Unless the user specifies in his question a specific number of examples he wishes to obtain, always limit your query to at most {self.top_k} results using the LIMIT clause. You can order the results by a relevant column to return the most interesting examples in the database.
-Never query for all the columns from a specific table, only ask for a the few relevant columns given the question.
-Pay attention to use only the column names that you can see in the schema description. Be careful to not query for columns that do not exist. Also, pay attention to which column is in which table.
+        return f"""Given an input question, first create a syntactically correct BigQuery query to run, then look at the results of the query and return the answer. Unless the user specifies a specific number of examples, always limit your query to at most {self.top_k} results using the LIMIT clause. You can order the results by a relevant column to return the most interesting examples in the database. Use JSON_QUERY(json_expr, json_path) to access fields in the activity JSON. Never query for all the columns from a specific table, only ask for a the few relevant columns given the question. Pay attention to use only the column names that you can see in the schema description. Be careful to not query for columns that do not exist.
 Use the following format:
 Question: "Question here"
 SQLQuery: "SQL Query to run"
@@ -66,9 +64,10 @@ SQLResult: "Result of the SQLQuery"
 Answer: "Final answer here"
 Only use the following table:
 {self.table_info}
-where the activity is one of {'m'.join(self.activities)}
-and the activity schemas are:
+where the activity is one of these strings: {'m'.join(self.activities)}
+and the JSON schema for each of these activities is:
 {self.valid_activity_schema}
+
 Question: {self.user_question}"""
 
     def __repr__(self) -> str:
