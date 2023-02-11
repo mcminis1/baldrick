@@ -1,7 +1,9 @@
-from datetime import timedelta, date
+from datetime import timedelta, date, datetime
 import json
 
 from faker import Faker
+
+import faker_commerce
 import numpy as np
 
 from google.cloud import bigquery
@@ -17,6 +19,7 @@ query = f"""
         activity_id STRING NOT NULL,
         ts TIMESTAMP NOT NULL,
         customer STRING,
+        anonymous_id STRING,
         activity STRING,
         feature_json JSON,
     )
@@ -31,35 +34,26 @@ job.result()
 
 Faker.seed(1334)
 fake = Faker()
+fake.add_provider(faker_commerce.Provider)
 
 num_customers = 200
 num_products = 30
-max_interactions = 100
-min_interactions = 5
-non_conversion_ids = int(num_customers + 0.33)
+max_interactions = 400
+min_interactions = 1
 
 # list of products with price
 products = {
-    fake.color_name()
-    + np.random.choice([" Doodad", " Widget", " Thing-a-ma-bob"]): round(
-        np.random.uniform(low=10, high=30), 2
-    )
-    for _ in range(num_products)
+    fake.ecommerce_name(): fake.ecommerce_price() for _ in range(num_products)
 }
 
 
 # list of customers with personal info
-customers = {
-    fake.email(domain=fake.domain_name()): (
-        fake.name(),
-        fake.address(),
-        date.isoformat(fake.date_of_birth(minimum_age=18, maximum_age=88)),
-    )
-    for _ in range(num_customers)
-}
-
-# list of fictitious webpages
-pages = ["/contact", "/home", "/about", "/products"]
+customers = [
+    {
+        'name': fake.email(domain=fake.domain_name()), 
+        'anon_id': fake.uuid4()
+    } for _ in range(num_customers)
+]
 
 # activity stream of customer interactions
 cust_acts = list()
@@ -67,11 +61,12 @@ cust_acts = list()
 
 def ACTIVITY_HANDLER(activity, cust, ts):
     if activity == "Visited Page":
-        feats = json.dumps({"URL": np.random.choice(pages)})
+        feats = json.dumps({"URL": fake.uri_path()})
         out = {
             "activity_id": fake.uuid4(),
             "ts": ts,
-            "customer": cust,
+            "anon_id": cust['anon_id'],
+            "customer": cust['name'],
             "activity": activity,
             "feature_json": feats,
         }
@@ -82,7 +77,8 @@ def ACTIVITY_HANDLER(activity, cust, ts):
         out = {
             "activity_id": fake.uuid4(),
             "ts": ts,
-            "customer": cust,
+            "anon_id": cust['anon_id'],
+            "customer": cust['name'],
             "activity": activity,
             "feature_json": feats,
         }
@@ -96,54 +92,45 @@ def ACTIVITY_HANDLER(activity, cust, ts):
                 out = {
                     "activity_id": fake.uuid4(),
                     "ts": ret_ts,
-                    "customer": cust,
+                    "anon_id": cust['anon_id'],
+                    "customer": cust['name'],
                     "activity": activity,
                     "feature_json": feats,
                 }
 
     else:
         feats = json.dumps(
-            {"representative": fake.name(),
+            {"representative": fake.name_nonbinary(),
              "notes": fake.paragraph()}
              )
         out = {
             "activity_id": fake.uuid4(),
             "ts": ts,
-            "customer": cust,
+            "anon_id": cust['anon_id'],
+            "customer": cust['name'],
             "activity": activity,
             "feature_json": feats,
         }
 
-    out["ts"] = date.isoformat(out["ts"])
+    out["ts"] = datetime.isoformat(out["ts"])
 
     return out
 
-
 activities = ["Visited Page", "Placed Order", "Contacted Support"]
 
-for _ in range(non_conversion_ids):
-    anon_id = fake.uuid4()
-
-    ts = fake.date_time_this_decade()
-    activity = np.random.choice(activities[:2])
-    cust_acts.append(ACTIVITY_HANDLER(activity, anon_id, ts))
-
-
 # Generate DF of randomly generated customer interactions
-for cust, info in customers.items():
-    anon_id = fake.uuid4()
+for cust in customers:
 
-    ts = fake.date_time_this_decade()
+    ts = fake.date_time_this_year()
     for _ in range(np.random.randint(low=1, high=5)):
         activity = np.random.choice(activities[:2])
-        cust_acts.append(ACTIVITY_HANDLER(activity, anon_id, ts))
+        cust_acts.append(ACTIVITY_HANDLER(activity, cust, ts))
 
     init_activity = "Created Account"
     init_features = {
-        "name": info[0],
-        "address": info[1],
-        "birthdate": info[2],
-        "anon_id": anon_id,
+        "name": fake.name(),
+        "address": fake.address(),
+        "birthdate": date.isoformat(fake.date_of_birth(minimum_age=18, maximum_age=88)),
     }
 
     cust_acts.append(ACTIVITY_HANDLER(init_activity, cust, ts))
@@ -154,6 +141,16 @@ for cust, info in customers.items():
             activity = np.random.choice(activities, p=[1 / 2, 1 / 4, 1 / 4])
 
             cust_acts.append(ACTIVITY_HANDLER(activity, cust, ts))
+
+non_conversion_ids = np.random.randint(low=num_customers, high=10*num_customers)
+for _ in range(non_conversion_ids):
+    anon_id = fake.uuid4()
+    ts = fake.date_time_this_year()
+    for _ in range(np.random.randint(min_interactions, max_interactions)):
+        ts = ts + timedelta(days=np.random.randint(1, 11))
+        if ts.date() <= date.today():    
+            activity = np.random.choice(activities[:2])
+            cust_acts.append(ACTIVITY_HANDLER(activity, {'name': None, 'anon_id': anon_id}, ts))
 
 
 job_config = bigquery.LoadJobConfig(

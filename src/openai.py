@@ -10,6 +10,7 @@ table_info = """
 Table EVENT_SCHEMA {
     activity_id primary key,
     ts TIMESTAMP NOT NULL,
+    anon_id STRING,
     customer STRING,
     activity STRING,
     feature_json JSON
