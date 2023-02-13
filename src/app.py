@@ -63,9 +63,8 @@ class INVALID_QUERY_RESPONSE:
 
 
 @app.event("app_mention")
-async def handle_app_mentions(ack, body, say):
-    user_id = body["user_id"]
-    ack_this = await ack(f"<@{user_id}> I have a cunning plan...")
+async def handle_app_mentions(ack, say):
+    ack_this = await ack(f"I have a cunning plan...")
     logging.debug(f"ack response: {ack_this}")
     user_question = str(body["event"]["text"])
     activities = await get_relevant_activities(user_question)
