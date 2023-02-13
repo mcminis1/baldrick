@@ -11,8 +11,7 @@ logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 app = AsyncApp(
     token=os.environ.get("SLACK_BOT_TOKEN"),
-    signing_secret=os.environ.get("SLACK_SIGNING_SECRET"),
-    process_before_response=True
+    signing_secret=os.environ.get("SLACK_SIGNING_SECRET")
 )
 app_handler = AsyncSlackRequestHandler(app)
 
