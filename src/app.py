@@ -62,16 +62,10 @@ class INVALID_QUERY_RESPONSE:
     def to_str(self) -> str:
         return str(self)
 
-def respond_to_slack_within_3_seconds(body, ack):
-    text = body.get("text")
-    if text is None or len(text) == 0:
-        ack(":x: Usage: /start-process (description here)")
-    else:
-        ack(f"Accepted! (task: {body['text']})")
-
-async def handle_app_mentions(body, say):
-    # ack_this = await ack(f"I have a cunning plan...")
-    # logging.debug(f"ack response: {ack_this}")
+@app.event("app_mention")
+async def handle_app_mentions(ack, body, say):
+    ack_this = await ack(f"I have a cunning plan...")
+    logging.debug(f"ack response: {ack_this}")
     user_question = str(body["event"]["text"])
     activities = await get_relevant_activities(user_question)
     query, example_answer = await get_sql_query(user_question, activities)
@@ -82,11 +76,6 @@ async def handle_app_mentions(body, say):
         await say(VALID_QUERY_RESPONSE(activities, query, query_explanation, example_answer, data).to_str())
     else:
         await say(INVALID_QUERY_RESPONSE(activities, query, example_answer).to_str())
-
-app.event("app_mention")(
-    ack=respond_to_slack_within_3_seconds,  # responsible for calling `ack()`
-    lazy=[handle_app_mentions]  # unable to call `ack()` / can have multiple functions
-)
 
 api = FastAPI()
 
