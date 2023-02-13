@@ -57,11 +57,11 @@ class QUERY_PROMPT:
         self.valid_activity_schema = '\n'.join(valid_activity_schema)
 
     def __str__(self) -> str:
-        return f"""Given an input question, first create a syntactically correct BigQuery query to run, then look at the results of the query and return the answer. Unless the user specifies a specific number of examples, always limit your query to at most {self.top_k} results using the LIMIT clause. You can order the results by a relevant column to return the most interesting examples in the database. Use JSON_QUERY(json_expr, json_path) to access fields in the activity JSON. Never query for all the columns from a specific table, only ask for a the few relevant columns given the question. Pay attention to use only the column names that you can see in the schema description. Be careful to not query for columns that do not exist. When performing aggregations like COUNT, SUM, MAX, MIN, or MEAN rename the column to something descriptive.
+        return f"""Given an input question, first create a syntactically correct BigQuery query to run, then look at the results of the query and return the answer. Unless the user specifies a specific number of examples, always limit your query to at most 10 results using the LIMIT clause. You can order the results by a relevant column to return the most interesting examples in the database. Use JSON_QUERY(json_expr, json_path) to access fields in the activity JSON. Never query for all the columns from a specific table, only ask for a the few relevant columns given the question. Pay attention to use only the column names that you can see in the schema description. Be careful to not query for columns that do not exist. Always use CAST statements when using comparison operators to ensure that the data types are equivalent. Always CAST TIMESTAMP values to date. Account for possible capitalization in in STRING values by casting them to lower case.  When performing aggregations like COUNT, SUM, MAX, MIN, or MEAN rename the column to something descriptive.
 Use the following format:
 Question: "Question here"
-SQLQuery: "SQL Query to run"
-SQLResult: "Result of the SQLQuery"
+BigQuery Statement: "BigQuery statement to run"
+BigQuery Result: "Result of BigQuery request"
 Answer: "Final answer here"
 Only use the following table:
 {self.table_info}
@@ -103,8 +103,8 @@ class QUERY_PLAN_EXPLANATION:
         self.query = query
 
     def __str__(self) -> str:
-        return f"""Explain to a CEO how the following SQL query will answer their business question. If there is a where clause explain it to them in simple terms.
-SQL Query:
+        return f"""Explain to a CEO how the following BigQuery request will answer their business question. If there is a where clause explain it to them in simple terms.
+BigQuery Statement:
 {self.query}
 Business Question:
 {self.user_question}
@@ -151,8 +151,8 @@ async def get_sql_query(user_question, activities) -> str:
     )
     logging.debug(completion)
     response = completion["choices"][0]["text"]
-    start_query = response.find("SQLQuery:") + len("SQLQuery:")
-    end_query = response.find("SQLResult:")
+    start_query = response.find("BigQuery Statement:") + len("BigQuery Statement:")
+    end_query = response.find("BigQuery Result:")
     start_answer = response.find("Answer:") + len("Answer:") + 1
 
     query = response[start_query:end_query]
