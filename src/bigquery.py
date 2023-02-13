@@ -19,6 +19,9 @@ def get_query_plan(query: str) -> str:
             )
         if query_job.errors is None:
             return "\n".join(query_job.query_plan)
+        else:
+            logging.warning(query_job.errors)
+            logging.warning(query_job.query_plan)
     except Exception as e:
         logging.error(e)
     return None
