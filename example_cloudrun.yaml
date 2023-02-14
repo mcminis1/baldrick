@@ -1,0 +1,94 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: baldrick
+  namespace: 'dnamespace'
+  selfLink: /apis/serving.knative.dev/v1/namespaces/dnamespace/services/baldrick
+  uid: 0d98a4af-77a3-4d63-b15d-6f4c56f43a63
+  resourceVersion: AAX0mE3pD5c
+  generation: 1
+  creationTimestamp: '2023-02-08T14:20:41.248769Z'
+  labels:
+    managed-by: github-actions
+    commit-sha: sha512xxxxxxxxxxxxxxxxxxx
+    cloud.googleapis.com/location: us-central1
+  annotations:
+    run.googleapis.com/client-name: cloud-console
+    serving.knative.dev/creator: jeremy@sawtoothdata.com
+    serving.knative.dev/lastModifier: jeremy@sawtoothdata.com
+    client.knative.dev/user-image: us-central1-docker.pkg.dev/baldrick/cloud-run-source-deploy/baldrick
+    run.googleapis.com/operation-id: 205ed960-c856-4ce6-b15f-b1dd7ea34c0c
+    run.googleapis.com/ingress: all
+    run.googleapis.com/ingress-status: all
+spec:
+  template:
+    metadata:
+      name: baldrick-00001-liy
+      labels:
+        managed-by: github-actions
+        commit-sha: sha512xxxxxxxxxxxxxxxxxxx
+      annotations:
+        run.googleapis.com/client-name: cloud-console
+        client.knative.dev/user-image: us-central1-docker.pkg.dev/baldrick/cloud-run-source-deploy/baldrick
+        autoscaling.knative.dev/minScale: '1'
+        autoscaling.knative.dev/maxScale: '4'
+        run.googleapis.com/cpu-throttling: 'false'
+    spec:
+      containerConcurrency: 8
+      timeoutSeconds: 300
+      serviceAccountName: baldrick@baldrick.iam.gserviceaccount.com
+      containers:
+      - image: us-central1-docker.pkg.dev/baldrick/cloud-run-source-deploy/baldrick
+        ports:
+        - name: http1
+          containerPort: 8080
+        env:
+        - name: PROJECT_ID
+          value: baldrick
+        - name: DATASET
+          value: doodad_inc
+        - name: TABLE
+          value: customer_stream
+        - name: SLACK_SIGNING_SECRET
+          valueFrom:
+            secretKeyRef:
+              key: latest
+              name: SLACK_SIGNING_SECRET
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              key: latest
+              name: OPENAI_API_KEY
+        - name: SLACK_BOT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: latest
+              name: SLACK_BOT_TOKEN
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 512Mi
+  traffic:
+  - percent: 100
+    latestRevision: true
+status:
+  observedGeneration: 1
+  conditions:
+  - type: Ready
+    status: 'True'
+    lastTransitionTime: '2023-02-13T17:37:42.753897Z'
+  - type: ConfigurationsReady
+    status: 'True'
+    lastTransitionTime: '2023-02-13T17:37:35.775597Z'
+  - type: RoutesReady
+    status: 'True'
+    lastTransitionTime: '2023-02-13T17:37:42.879127Z'
+  latestReadyRevisionName: baldrick-00001-liy
+  latestCreatedRevisionName: baldrick-00001-liy
+  traffic:
+  - revisionName: baldrick-00001-liy
+    percent: 100
+    latestRevision: true
+  url: https://baldrick-tou4uemkya-uc.a.run.app
+  address:
+    url: https://baldrick-tou4uemkya-uc.a.run.app
