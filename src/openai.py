@@ -1,7 +1,12 @@
 import os
 import openai
 import logging
-from .prompts import EVENT_CHOOSER_PROMPT, QUERY_PLAN_EXPLANATION, QUERY_PROMPT, CORRECT_QUERY_ERROR
+from .prompts import (
+    EVENT_CHOOSER_PROMPT,
+    QUERY_PLAN_EXPLANATION,
+    QUERY_PROMPT,
+    CORRECT_QUERY_ERROR,
+)
 
 openai.api_key = os.environ.get("OPENAI_API_KEY")
 

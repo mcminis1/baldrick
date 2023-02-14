@@ -1,4 +1,3 @@
-
 top_k = 10
 
 # this should query the schema to get the columns
@@ -13,41 +12,48 @@ Table EVENT_SCHEMA {
 }
 """
 # this should query the table to get the names
-event_names = ["Visited Page","Contacted Support","Placed Order","Returned Item","Created Account"]
+event_names = [
+    "Visited Page",
+    "Contacted Support",
+    "Placed Order",
+    "Returned Item",
+    "Created Account",
+]
 
 # this should query each event and get the schema available to them
-activity_schema = { 
-"Visited Page": """Event "Visited Page" {
+activity_schema = {
+    "Visited Page": """Event "Visited Page" {
     URL STRING,
 }""",
-"Contacted Support": """Event "Contacted Support" {
+    "Contacted Support": """Event "Contacted Support" {
     representative STRING,
     notes STRING,
 }""",
-"Placed Order": """Event "Placed Order" {
+    "Placed Order": """Event "Placed Order" {
     product STRING,
     price STRING,
 }""",
-"Returned Item": """Event "Returned Item" {
+    "Returned Item": """Event "Returned Item" {
     product STRING,
     price STRING,
 }""",
-"Created Account": """Event "Created Account" {
+    "Created Account": """Event "Created Account" {
     name STRING,
     birthdate TIMESTAMP NOT NULL,
     address STRING,
-}"""
+}""",
 }
+
 
 class QUERY_PROMPT:
     def __init__(self, activities, user_question):
         self.activities = activities
-        self.user_question = user_question.strip(' \n')
+        self.user_question = user_question.strip(" \n")
         valid_activity_schema = []
         for key in self.activities:
             if key in activity_schema:
                 valid_activity_schema.append(activity_schema.get(key))
-        self.valid_activity_schema = '\n'.join(valid_activity_schema)
+        self.valid_activity_schema = "\n".join(valid_activity_schema)
 
     def __str__(self) -> str:
         return f"""Given an input question, first create a syntactically correct BigQuery query to run, then look at the results of the query and return the answer. Unless the user specifies a specific number of examples, always limit your query to at most {top_k} results using the LIMIT clause. You can order the results by a relevant column to return the most interesting examples in the database. Use JSON_QUERY(json_expr, json_path) to access fields in the activity JSON. Never query for all the columns from a specific table, only ask for a the few relevant columns given the question. Pay attention to use only the column names that you can see in the schema description. Be careful to not query for columns that do not exist. CAST TIMESTAMP values to DATE using CAST(ts as DATE) in the where clause when using DATE_* methods to compare date ranges. Account for possible capitalization in in STRING values by casting them to lower case.  When performing aggregations like COUNT, SUM, MAX, MIN, or MEAN rename the column to something descriptive. Check all of the comparisons and CAST them to specific types so that there are no type errors.
@@ -69,6 +75,7 @@ Question: {self.user_question}"""
 
     def to_str(self) -> str:
         return str(self)
+
 
 class CORRECT_QUERY_ERROR:
     def __init__(self, user_question, query, error):
@@ -108,10 +115,9 @@ Relevant Event Names:"""
 
     def __repr__(self) -> str:
         return str(self)
-    
+
     def to_str(self) -> str:
         return str(self)
-
 
 
 class QUERY_PLAN_EXPLANATION:
@@ -129,6 +135,6 @@ Explanation:"""
 
     def __repr__(self) -> str:
         return str(self)
-    
+
     def to_str(self) -> str:
         return str(self)

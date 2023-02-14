@@ -1,4 +1,3 @@
-
 class VALID_QUERY_RESPONSE:
     def __init__(self, activities, llm_query, llm_query_plan, example_answer, data):
         self.activities = activities
@@ -12,6 +11,7 @@ class VALID_QUERY_RESPONSE:
 
     def __repr__(self):
         return str(self)
+
     def to_str(self) -> str:
         return str(self)
 
@@ -27,5 +27,6 @@ class INVALID_QUERY_RESPONSE:
 
     def __repr__(self):
         return str(self)
+
     def to_str(self) -> str:
         return str(self)
