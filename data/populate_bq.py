@@ -42,17 +42,13 @@ max_interactions = 400
 min_interactions = 1
 
 # list of products with price
-products = {
-    fake.ecommerce_name(): fake.ecommerce_price() for _ in range(num_products)
-}
+products = {fake.ecommerce_name(): fake.ecommerce_price() for _ in range(num_products)}
 
 
 # list of customers with personal info
 customers = [
-    {
-        'name': fake.email(domain=fake.domain_name()), 
-        'anon_id': fake.uuid4()
-    } for _ in range(num_customers)
+    {"name": fake.email(domain=fake.domain_name()), "anon_id": fake.uuid4()}
+    for _ in range(num_customers)
 ]
 
 # activity stream of customer interactions
@@ -65,8 +61,8 @@ def ACTIVITY_HANDLER(activity, cust, ts):
         out = {
             "activity_id": fake.uuid4(),
             "ts": ts,
-            "anon_id": cust['anon_id'],
-            "customer": cust['name'],
+            "anon_id": cust["anon_id"],
+            "customer": cust["name"],
             "activity": activity,
             "feature_json": feats,
         }
@@ -77,8 +73,8 @@ def ACTIVITY_HANDLER(activity, cust, ts):
         out = {
             "activity_id": fake.uuid4(),
             "ts": ts,
-            "anon_id": cust['anon_id'],
-            "customer": cust['name'],
+            "anon_id": cust["anon_id"],
+            "customer": cust["name"],
             "activity": activity,
             "feature_json": feats,
         }
@@ -92,22 +88,21 @@ def ACTIVITY_HANDLER(activity, cust, ts):
                 out = {
                     "activity_id": fake.uuid4(),
                     "ts": ret_ts,
-                    "anon_id": cust['anon_id'],
-                    "customer": cust['name'],
+                    "anon_id": cust["anon_id"],
+                    "customer": cust["name"],
                     "activity": activity,
                     "feature_json": feats,
                 }
 
     else:
         feats = json.dumps(
-            {"representative": fake.name_nonbinary(),
-             "notes": fake.paragraph()}
-             )
+            {"representative": fake.name_nonbinary(), "notes": fake.paragraph()}
+        )
         out = {
             "activity_id": fake.uuid4(),
             "ts": ts,
-            "anon_id": cust['anon_id'],
-            "customer": cust['name'],
+            "anon_id": cust["anon_id"],
+            "customer": cust["name"],
             "activity": activity,
             "feature_json": feats,
         }
@@ -116,11 +111,11 @@ def ACTIVITY_HANDLER(activity, cust, ts):
 
     return out
 
+
 activities = ["Visited Page", "Placed Order", "Contacted Support"]
 
 # Generate DF of randomly generated customer interactions
 for cust in customers:
-
     ts = fake.date_time_this_year()
     for _ in range(np.random.randint(low=1, high=5)):
         activity = np.random.choice(activities[:2])
@@ -142,15 +137,17 @@ for cust in customers:
 
             cust_acts.append(ACTIVITY_HANDLER(activity, cust, ts))
 
-non_conversion_ids = np.random.randint(low=num_customers, high=10*num_customers)
+non_conversion_ids = np.random.randint(low=num_customers, high=10 * num_customers)
 for _ in range(non_conversion_ids):
     anon_id = fake.uuid4()
     ts = fake.date_time_this_year()
     for _ in range(np.random.randint(min_interactions, max_interactions)):
         ts = ts + timedelta(days=np.random.randint(1, 11))
-        if ts.date() <= date.today():    
+        if ts.date() <= date.today():
             activity = np.random.choice(activities[:2])
-            cust_acts.append(ACTIVITY_HANDLER(activity, {'name': None, 'anon_id': anon_id}, ts))
+            cust_acts.append(
+                ACTIVITY_HANDLER(activity, {"name": None, "anon_id": anon_id}, ts)
+            )
 
 
 job_config = bigquery.LoadJobConfig(
