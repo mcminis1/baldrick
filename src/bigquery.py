@@ -18,13 +18,13 @@ def get_query_plan(query: str) -> str:
                 query_job.job_id, location=query_job.location
             )
         if query_job.errors is None:
-            return "\n".join(query_job.query_plan)
+            return "\n".join(query_job.query_plan), None
         else:
             logging.warning(query_job.errors)
             logging.warning(query_job.query_plan)
     except Exception as e:
         logging.error(e)
-    return None
+    return None, query_job.errors
 
 
 def run_query(query: str) -> dict:
