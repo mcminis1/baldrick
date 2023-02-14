@@ -2,6 +2,8 @@
 # https://hub.docker.com/_/python
 FROM python:3.11-slim
 
+RUN apt-get update; apt-get install -y cmake build-essential pkg-config libgoogle-perftools-dev git; rm -rf /var/lib/apt/lists/*;
+
 # Allow statements and log messages to immediately appear in the Knative logs
 ENV PYTHONUNBUFFERED True
 
