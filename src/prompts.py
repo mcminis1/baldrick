@@ -126,10 +126,11 @@ where the activity is one of these strings: {', '.join(self.activities)}
 and the JSON schema for each of these activities is:
 {self.valid_activity_schema}
 
-Example Queries:
+Examples:
 { self.examples }
 
-Question: {self.user_question}"""
+Question: {self.user_question}
+BigQuery Statement:"""
 
     def __repr__(self) -> str:
         return str(self)
