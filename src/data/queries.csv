@@ -1,0 +1,103 @@
+Prompt,Query,NOTES
+What are the most returned items?,"SELECT
+  JSON_QUERY(feature_json, ""$.product"") AS Product,
+  COUNT(*) AS Returned_Items
+FROM
+  `doodad_inc.customer_stream`
+WHERE
+  activity = ""Returned Item""
+GROUP BY
+  Product
+ORDER BY
+  Returned_Items DESC
+LIMIT
+  10;",
+What are the 10 best selling products?,"SELECT
+  JSON_QUERY(feature_json, '$.product') AS product,
+  COUNT(*) num_product
+FROM
+  `doodad_inc.customer_stream`
+WHERE
+  LOWER(activity) = 'placed order'
+GROUP BY
+  product
+ORDER BY
+  num_product DESC
+LIMIT
+  10",
+on average how long do customers go between purchases?,"SELECT AVG(ts_diff) AS avg_time_between_purchases
+FROM (
+  SELECT customer, anon_id, 
+    TIMESTAMP_DIFF(MAX(ts), MIN(ts), DAY) AS ts_diff
+  FROM doodad_inc.customer_stream
+  WHERE activity = 'Placed Order'
+  GROUP BY customer, anon_id
+)",
+How  many items over $5 were sold last month?,"SELECT
+  COUNT(*) AS num_items_over_5
+FROM
+  doodad_inc.customer_stream
+WHERE
+  activity = 'Placed Order'
+  AND CAST(JSON_QUERY(feature_json, '$.price') AS FLOAT64) > 5
+  AND CAST(ts AS date) >= DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH)",
+how many keyboards have we sold?,"SELECT
+  COUNT(*) AS num_keyboards
+FROM
+  `doodad_inc.customer_stream`
+WHERE
+  activity = 'Placed Order'
+  AND LOWER(JSON_EXTRACT(feature_json, '$.product')) = 'keyboard'",The product string contain double quotes. Needs to be repaired in the populate_bq code
+what is the average time to conversion?,"SELECT
+  *
+FROM (
+  SELECT
+    customer,
+    anon_id,
+    ts
+  FROM
+    `doodad_inc.customer_stream`
+  WHERE
+    activity = 'Created Account') a
+JOIN (
+  SELECT
+    anon_id,
+    MIN(ts) AS first_appearance
+  FROM
+    `doodad_inc.customer_stream`
+  GROUP BY
+    anon_id) b
+ON
+  a.anon_id = b.anon_id",Currently returns 0 because there are no pre-conversion activities in the data. This needs to be fised in the populate_bq code
+what are the 3 the most common urls visited before conversion?,"SELECT
+  first_url,
+  COUNT(*) AS frequency
+FROM (
+  SELECT
+    FIRST_VALUE(JSON_QUERY(feature_json, '$.URL')) OVER (PARTITION BY customer ORDER BY ts) AS first_url
+  FROM
+    `doodad_inc.customer_stream`
+  WHERE
+    customer IS NOT NULL
+    AND activity = 'Visited Page' )
+GROUP BY
+  first_url
+ORDER BY
+  frequency DESC
+LIMIT 3",
+What 10 products do customers purchased most ofter immediately after conversion?,"SELECT
+  first_purchase,
+  COUNT(*) AS frequency
+FROM (
+  SELECT
+    FIRST_VALUE(JSON_QUERY(feature_json, '$.product')) OVER (PARTITION BY customer ORDER BY ts) AS first_purchase
+  FROM
+    `doodad_inc.customer_stream`
+  WHERE
+    customer IS NOT NULL
+    AND activity = 'Placed Order' )
+GROUP BY
+  first_purchase
+ORDER BY
+  frequency DESC
+LIMIT 10",

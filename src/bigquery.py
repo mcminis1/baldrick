@@ -1,5 +1,6 @@
 import logging
 import os
+from typing import Optional, Tuple, List
 from google.cloud import bigquery
 
 client = bigquery.Client()
@@ -8,7 +9,7 @@ dataset = os.environ.get("DATASET")
 table = os.environ.get("TABLE")
 
 
-def get_query_plan(query: str) -> str:
+def get_query_plan(query: str) -> Tuple[Optional[str], Optional[str]]:
     f_query = query.replace("EVENT_SCHEMA", f"`{project_id}.{dataset}.{table}`")
     config = bigquery.QueryJobConfig(
         dry_run=True, priority=bigquery.QueryPriority.BATCH
@@ -27,7 +28,7 @@ def get_query_plan(query: str) -> str:
     return None, query_job.errors
 
 
-def run_query(query: str) -> dict:
+def run_query(query: str) -> Optional[List[str]]:
     f_query = query.replace("EVENT_SCHEMA", f"`{project_id}.{dataset}.{table}`")
     config = bigquery.QueryJobConfig(
         dry_run=False, priority=bigquery.QueryPriority.BATCH

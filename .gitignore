@@ -1,5 +1,7 @@
 # created by virtualenv automatically
 .vscode/
+
+include/
 lib64/
 lib/
 bin/
