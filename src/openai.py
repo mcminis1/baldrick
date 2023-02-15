@@ -4,7 +4,6 @@ import logging
 from .prompts import (
     EVENT_CHOOSER_PROMPT,
     QUERY_PLAN_EXPLANATION,
-    QUERY_PROMPT,
     CORRECT_QUERY_ERROR,
     QUERY_WITH_EXAMPLES_PROMPT,
 )
