@@ -68,14 +68,11 @@ async def get_sql_query_with_examples(user_question, activities) -> str:
     logging.debug(completion)
     response = completion["choices"][0]["text"]
     start_query = response.find("BigQuery Statement:") + len("BigQuery Statement:")
-    end_query = response.find("BigQuery Result:")
-    start_answer = response.find("Answer:") + len("Answer:") + 1
 
-    query = response[start_query:end_query]
-    example_answer = response[start_answer:]
+    query = response[start_query:]
     # need to parse the output according to the prompt and return multiple parts
     # e.g. (SQLQuery, SQLResult, Answer) from the QUERY_PROMPT
-    return query, example_answer
+    return query
 
 
 async def correct_sql_query(user_question, query, error) -> str:
