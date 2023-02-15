@@ -20,7 +20,7 @@ event_names = [
     "Placed Order",
     "Returned Item",
     "Created Account",
-    "Deleted Account"
+    "Deleted Account",
 ]
 
 # this should query each event and get the schema available to them
@@ -54,6 +54,7 @@ project_id = os.environ.get("PROJECT_ID")
 dataset = os.environ.get("DATASET")
 table = os.environ.get("TABLE")
 fully_qualified_table_name = f"`{project_id}.{dataset}.{table}`"
+
 
 class CORRECT_QUERY_ERROR:
     def __init__(self, activities, user_question, query, error):

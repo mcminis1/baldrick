@@ -35,6 +35,7 @@ async def get_query_explanation(user_question, sql_query, answer) -> str:
     response = completion["choices"][0]["text"]
     return response
 
+
 async def get_sql_query_with_examples(user_question, activities) -> str:
     examples = get_top_k_matches(user_question)
     completion = await openai.Completion.acreate(

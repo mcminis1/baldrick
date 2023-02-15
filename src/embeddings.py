@@ -3,7 +3,7 @@ import pandas as pd
 from sentence_transformers import SentenceTransformer, util
 from .data import DATA_PATH, MODEL_PATH
 
-queries_csv = os.path.join(DATA_PATH, 'queries.csv')
+queries_csv = os.path.join(DATA_PATH, "queries.csv")
 df = pd.read_csv(queries_csv)
 prompts = df["Prompt"].to_list()
 
@@ -23,7 +23,7 @@ def get_top_k_matches(user_query, top_k=4, mex_length=512):
         matches.append((score, prompt, query))
     winners = []
     prompt_length = 0
-    for (_, p, q) in sorted(matches, reverse=True)[:top_k]:
+    for _, p, q in sorted(matches, reverse=True)[:top_k]:
         prompt_length += len(p) + len(q)
         if prompt_length < mex_length:
             winners.append((p, q))

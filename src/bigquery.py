@@ -5,6 +5,7 @@ from google.cloud import bigquery
 
 client = bigquery.Client()
 
+
 def get_query_plan(query: str) -> Tuple[Optional[str], Optional[str]]:
     config = bigquery.QueryJobConfig(
         dry_run=True, priority=bigquery.QueryPriority.BATCH
@@ -21,7 +22,7 @@ def get_query_plan(query: str) -> Tuple[Optional[str], Optional[str]]:
             return None, query_job.errors
     except Exception as e:
         logging.error(e)
-    return None, {'error': 'raised exception'}
+    return None, {"error": "raised exception"}
 
 
 def run_query(query: str) -> Optional[List[str]]:
