@@ -23,9 +23,10 @@ def get_query_plan(query: str) -> Tuple[Optional[str], Optional[str]]:
         else:
             logging.warning(query_job.errors)
             logging.warning(query_job.query_plan)
+            return None, query_job.errors
     except Exception as e:
         logging.error(e)
-    return None, query_job.errors
+    return None, {'error': 'raised exception'}
 
 
 def run_query(query: str) -> Optional[List[str]]:
