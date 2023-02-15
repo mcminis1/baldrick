@@ -108,3 +108,77 @@ FROM
 WHERE
   activity = 'Placed Order'
   AND ts > DATE_SUB(CURRENT_TIMESTAMP(), INTERVAL 7 DAY)",
+What is the user retention for the last month?,"SELECT
+  COUNT(DISTINCT anon_id) AS num_unique_users,
+  COUNT(DISTINCT
+    CASE
+      WHEN activity = 'Created Account' THEN anon_id
+  END
+    ) AS num_conversions,
+  COUNT(DISTINCT
+    CASE
+      WHEN activity = 'Deleted Account' THEN anon_id
+  END
+    ) AS num_deletions
+FROM
+  `doodad_inc.customer_stream_new`
+WHERE
+  CAST(ts AS date) > DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH)",
+How many new users join each month?,"SELECT
+  COUNT(DISTINCT customer) AS new_users,
+  EXTRACT(MONTH
+  FROM
+    ts) AS month
+FROM
+  `doodad_inc.customer_stream_new`
+WHERE
+  activity = 'Created Account'
+GROUP BY
+  month
+ORDER BY
+  month ASC",
+Which product did we sell the most each month?,"SELECT
+  EXTRACT(MONTH
+  FROM
+    ts) AS month,
+  JSON_QUERY(feature_json, '$.product') AS product,
+  COUNT(*) AS num_sales
+FROM
+  `doodad_inc.customer_stream_new`
+WHERE
+  activity = 'Placed Order'
+GROUP BY
+  month,
+  product
+ORDER BY
+  month DESC,
+  num_sales DESC",
+What was or total revenue each month?,"SELECT
+  SUM(CAST(JSON_QUERY(feature_json, ""$.price"") AS float64)) AS total_revenue,
+  EXTRACT(MONTH
+  FROM
+    ts) AS month
+FROM
+  `doodad_inc.customer_stream_new`
+WHERE
+  activity=""Placed Order""
+GROUP BY
+  month
+ORDER BY
+  total_revenue DESC
+LIMIT
+  10;",
+ Which web page was visited most this month?,"SELECT
+  JSON_QUERY(feature_json, '$.URL') AS page,
+  COUNT(*) AS visit_count
+FROM
+  `doodad_inc.customer_stream_new`
+WHERE
+  activity = ""Visited Page""
+  AND CAST(ts AS date) >= DATE_TRUNC(CURRENT_DATE(), MONTH)
+GROUP BY
+  page
+ORDER BY
+  visit_count DESC
+LIMIT
+  1",
