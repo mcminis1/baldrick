@@ -6,6 +6,11 @@ prompts = df["Prompt"].to_list()
 model_name = "sentence-transformers/all-mpnet-base-v1"
 model = SentenceTransformer(model_name)
 
+modelPath = '../src/data/embedding_model'
+model.save(modelPath)
+
+
+
 # Sentences are encoded by calling model.encode()
 embeddings = model.encode(prompts)
 
