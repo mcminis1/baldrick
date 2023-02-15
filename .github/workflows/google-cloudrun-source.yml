@@ -88,6 +88,7 @@ jobs:
             PROJECT_ID=PROJECT_ID
             DATASET=DATASET
             TABLE=TABLE
+            TOKENIZERS_PARALLELISM=false
           secrets: |
               OPENAI_API_KEY=OPENAI_API_KEY:latest
               SLACK_SIGNING_SECRET=SLACK_SIGNING_SECRET:latest
