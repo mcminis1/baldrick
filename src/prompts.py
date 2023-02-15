@@ -18,6 +18,7 @@ event_names = [
     "Placed Order",
     "Returned Item",
     "Created Account",
+    "Deleted Account"
 ]
 
 # this should query each event and get the schema available to them
@@ -41,6 +42,9 @@ activity_schema = {
     name STRING,
     birthdate TIMESTAMP NOT NULL,
     address STRING,
+}""",
+    "Deleted Account": """Event "Deleted Account" {
+    reason STRING,
 }""",
 }
 
