@@ -121,7 +121,7 @@ What is the user retention for the last month?,"SELECT
   END
     ) AS num_deletions
 FROM
-  `doodad_inc.customer_stream_new`
+  `doodad_inc.customer_stream`
 WHERE
   CAST(ts AS date) > DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH)",
 How many new users join each month?,"SELECT
@@ -130,7 +130,7 @@ How many new users join each month?,"SELECT
   FROM
     ts) AS month
 FROM
-  `doodad_inc.customer_stream_new`
+  `doodad_inc.customer_stream`
 WHERE
   activity = 'Created Account'
 GROUP BY
@@ -144,7 +144,7 @@ Which product did we sell the most each month?,"SELECT
   JSON_QUERY(feature_json, '$.product') AS product,
   COUNT(*) AS num_sales
 FROM
-  `doodad_inc.customer_stream_new`
+  `doodad_inc.customer_stream`
 WHERE
   activity = 'Placed Order'
 GROUP BY
@@ -159,7 +159,7 @@ What was or total revenue each month?,"SELECT
   FROM
     ts) AS month
 FROM
-  `doodad_inc.customer_stream_new`
+  `doodad_inc.customer_stream`
 WHERE
   activity=""Placed Order""
 GROUP BY
@@ -172,7 +172,7 @@ LIMIT
   JSON_QUERY(feature_json, '$.URL') AS page,
   COUNT(*) AS visit_count
 FROM
-  `doodad_inc.customer_stream_new`
+  `doodad_inc.customer_stream`
 WHERE
   activity = ""Visited Page""
   AND CAST(ts AS date) >= DATE_TRUNC(CURRENT_DATE(), MONTH)
