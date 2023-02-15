@@ -4,18 +4,13 @@ from typing import Optional, Tuple, List
 from google.cloud import bigquery
 
 client = bigquery.Client()
-project_id = os.environ.get("PROJECT_ID")
-dataset = os.environ.get("DATASET")
-table = os.environ.get("TABLE")
-
 
 def get_query_plan(query: str) -> Tuple[Optional[str], Optional[str]]:
-    f_query = query.replace("EVENT_SCHEMA", f"`{project_id}.{dataset}.{table}`")
     config = bigquery.QueryJobConfig(
         dry_run=True, priority=bigquery.QueryPriority.BATCH
     )
     try:
-        query_job = client.query(f_query, config)
+        query_job = client.query(query, config)
         while query_job.state != "DONE":
             query_job = client.get_job(query_job.job_id, location=query_job.location)
         if query_job.errors is None:
@@ -30,13 +25,12 @@ def get_query_plan(query: str) -> Tuple[Optional[str], Optional[str]]:
 
 
 def run_query(query: str) -> Optional[List[str]]:
-    f_query = query.replace("EVENT_SCHEMA", f"`{project_id}.{dataset}.{table}`")
     config = bigquery.QueryJobConfig(
         dry_run=False, priority=bigquery.QueryPriority.BATCH
     )
-    logging.debug(f_query)
+    logging.debug(query)
     try:
-        query_job = client.query(f_query, config)
+        query_job = client.query(query, config)
         while query_job.state != "DONE":
             query_job = client.get_job(query_job.job_id, location=query_job.location)
         df = query_job.to_dataframe()

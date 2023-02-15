@@ -1,3 +1,5 @@
+import os
+
 top_k = 10
 
 # this should query the schema to get the columns
@@ -48,6 +50,11 @@ activity_schema = {
 }""",
 }
 
+project_id = os.environ.get("PROJECT_ID")
+dataset = os.environ.get("DATASET")
+table = os.environ.get("TABLE")
+fully_qualified_table_name = f"`{project_id}.{dataset}.{table}`"
+
 
 class QUERY_PROMPT:
     def __init__(self, activities, user_question):
@@ -60,12 +67,11 @@ class QUERY_PROMPT:
         self.valid_activity_schema = "\n".join(valid_activity_schema)
 
     def __str__(self) -> str:
-        return f"""Given an input question, first create a syntactically correct BigQuery query to run, then look at the results of the query and return the answer. Unless the user specifies a specific number of examples, always limit your query to at most {top_k} results using the LIMIT clause. You can order the results by a relevant column to return the most interesting examples in the database. Use JSON_QUERY(json_expr, json_path) to access fields in the activity JSON. Never query for all the columns from a specific table, only ask for a the few relevant columns given the question. Pay attention to use only the column names that you can see in the schema description. Be careful to not query for columns that do not exist. CAST TIMESTAMP values to DATE using CAST(ts as DATE) in the where clause when using DATE_* methods to compare date ranges. Account for possible capitalization in in STRING values by casting them to lower case.  When performing aggregations like COUNT, SUM, MAX, MIN, or MEAN rename the column to something descriptive. Check all of the comparisons and CAST them to specific types so that there are no type errors.
+        return f"""Given an input question, first create a syntactically correct BigQuery query to run, then look at the results of the query and return the answer. Unless the user specifies a specific number of examples, always limit your query to at most {top_k} results using the LIMIT clause. You can order the results by a relevant column to return the most interesting examples in the database. Use JSON_QUERY(json_expr, json_path) to access fields in the activity JSON. Never query for all the columns from a specific table, only ask for a the few relevant columns given the question. Pay attention to use only the column names that you can see in the schema description. Be careful to not query for columns that do not exist. CAST TIMESTAMP values to DATE using CAST(ts as DATE) in the where clause when using DATE_* methods to compare date ranges. Account for possible capitalization in in STRING values by casting them to lower case.  When performing aggregations like COUNT, SUM, MAX, MIN, or MEAN rename the column to something descriptive. Check all of the comparisons and CAST them to specific types so that there are no type errors. All queries should be FROM {fully_qualified_table_name}
 Use the following format:
 Question: "Question here"
 BigQuery Statement: "BigQuery statement to run"
 BigQuery Result: "Result of BigQuery request"
-Answer: "Final answer here"
 Only use the following table:
 {table_info}
 where the activity is one of these strings: {', '.join(self.activities)}
@@ -93,6 +99,7 @@ class CORRECT_QUERY_ERROR:
 - Use JSON_QUERY(json_expr, json_path) to access fields in the activity JSON.
 - CAST TIMESTAMP values to DATE using CAST(ts as DATE) in the where clause when using DATE_ methods to compare date ranges.
 - Account for possible capitalization in in STRING values by casting them to lower case.
+- All queries should be FROM {fully_qualified_table_name}
 
 Correct the SQL query so that it is syntactically correct SQL for BigQuery, still answers the user question, and eliminates the following error. Provide just the SQL query as your response.
 User Question: {self.user_question}
@@ -123,7 +130,7 @@ class QUERY_WITH_EXAMPLES_PROMPT:
 
     def __str__(self) -> str:
         nl = "\n"
-        return f"""Given an input question, first create a syntactically correct BigQuery query to run, then look at the results of the query and return the answer. Unless the user specifies a specific number of examples, always limit your query to at most {top_k} results using the LIMIT clause. You can order the results by a relevant column to return the most interesting examples in the database. Use JSON_QUERY(json_expr, json_path) to access fields in the activity JSON. Never query for all the columns from a specific table, only ask for a the few relevant columns given the question. Pay attention to use only the column names that you can see in the schema description. Be careful to not query for columns that do not exist. CAST TIMESTAMP values to DATE using CAST(ts as DATE) in the where clause when using DATE_* methods to compare date ranges. Account for possible capitalization in in STRING values by casting them to lower case.  When performing aggregations like COUNT, SUM, MAX, MIN, or MEAN rename the column to something descriptive. Check all of the comparisons and CAST them to specific types so that there are no type errors.
+        return f"""Given an input question, first create a syntactically correct BigQuery query to run, then look at the results of the query and return the answer. Unless the user specifies a specific number of examples, always limit your query to at most {top_k} results using the LIMIT clause. You can order the results by a relevant column to return the most interesting examples in the database. Use JSON_QUERY(json_expr, json_path) to access fields in the activity JSON. Never query for all the columns from a specific table, only ask for a the few relevant columns given the question. Pay attention to use only the column names that you can see in the schema description. Be careful to not query for columns that do not exist. CAST TIMESTAMP values to DATE using CAST(ts as DATE) in the where clause when using DATE_* methods to compare date ranges. Account for possible capitalization in in STRING values by casting them to lower case.  When performing aggregations like COUNT, SUM, MAX, MIN, or MEAN rename the column to something descriptive. Check all of the comparisons and CAST them to specific types so that there are no type errors. All queries should be FROM {fully_qualified_table_name}
 Only use the following table:
 {table_info}
 where the activity is one of these strings: {', '.join(self.activities)}
