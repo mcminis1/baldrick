@@ -101,3 +101,10 @@ GROUP BY
 ORDER BY
   frequency DESC
 LIMIT 10",
+how many different products have we sold in the last week?,"SELECT
+  COUNT(DISTINCT JSON_QUERY(feature_json, '$.product')) AS num_products
+FROM
+  `doodad_inc.customer_stream`
+WHERE
+  activity = 'Placed Order'
+  AND ts > DATE_SUB(CURRENT_TIMESTAMP(), INTERVAL 7 DAY)",
