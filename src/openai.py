@@ -83,4 +83,4 @@ async def correct_sql_query(user_question, query, error) -> str:
         temperature=0,
     )
     logging.debug(completion)
-    return completion.strip()
+    return completion["choices"][0]["text"].strip()
