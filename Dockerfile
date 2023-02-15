@@ -20,10 +20,11 @@ COPY src/data/download_models.py src/data/download_models.py
 # download the encodings stuff.
 RUN python src/data/download_models.py
 
-# Copy the rest of the code over (for caching efficiency)
-COPY . ./
-
+COPY requirements.txt requirements.txt
 # Install production dependencies.
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the rest of the code over (for caching efficiency)
+COPY . ./
 
 CMD exec gunicorn --bind :$PORT --workers 1 --worker-class uvicorn.workers.UvicornWorker  --threads 8 --preload src.app:api
