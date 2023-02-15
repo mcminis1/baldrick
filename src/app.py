@@ -6,7 +6,7 @@ from slack_bolt.adapter.fastapi.async_handler import AsyncSlackRequestHandler
 from fastapi import FastAPI, Request
 from .openai import (
     get_relevant_activities,
-    get_sql_query,
+    get_sql_query_with_examples,
     get_query_explanation,
     correct_sql_query,
 )
@@ -41,10 +41,10 @@ async def handle_app_mentions(ack, body, say):
     logging.debug(f"ack response: {ack_this}")
     user_question = str(body["event"]["text"])
     activities = await get_relevant_activities(user_question)
-    query, example_answer = await get_sql_query(user_question, activities)
+    query, example_answer = await get_sql_query_with_examples(user_question, activities)
     query_plan, query_errors = get_query_plan(query)
     if query_errors is not None:
-        query = correct_sql_query(user_question, query_plan, query_errors)
+        query = await correct_sql_query(user_question, query_plan, query_errors)
         query_plan, query_errors = get_query_plan(query)
 
     if query_errors is None:
