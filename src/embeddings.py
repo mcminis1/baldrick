@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 from sentence_transformers import SentenceTransformer, util
-from data import DATA_PATH, MODEL_PATH
+from .data import DATA_PATH, MODEL_PATH
 
 queries_csv = os.path.join(DATA_PATH, 'queries.csv')
 df = pd.read_csv(queries_csv)
