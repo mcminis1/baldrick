@@ -72,10 +72,32 @@ jobs:
         id: auth
         uses: 'google-github-actions/auth@v1'
         with:
-          create_credentials_file: true
+          token_format: access_token
           workload_identity_provider: ${{ secrets.WIF_PROVIDER }} 
           service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
-          
+
+      - name: Login to Artifact Registry
+        # us-central1-docker.pkg.dev/baldrick/cloud-run-source-deploy/baldrick
+        uses: docker/login-action@v1
+        with:
+          registry: us-central1-docker.pkg.dev
+          username: oauth2accesstoken
+          password: ${{ steps.auth.outputs.access_token }}
+
+      - name: Get tag
+        id: get-tag
+        run: echo ::set-output name=short_ref::${GITHUB_REF#refs/*/}
+
+      - id: docker-push-tagged
+        name: Tag Docker image and push to Google Artifact Registry
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: |
+             us-central1-docker.pkg.dev/baldrick/cloud-run-source-deploy/baldrick/baldrick:${{ steps.get-tag.outputs.short_ref }}
+             us-central1-docker.pkg.dev/baldrick/cloud-run-source-deploy/baldrick/baldrick:latest
+
       - name: Deploy to Cloud Run
         id: deploy
         uses: google-github-actions/deploy-cloudrun@v1
@@ -83,7 +105,7 @@ jobs:
           service: ${{ env.SERVICE }}
           region: ${{ env.REGION }}
           # NOTE: If required, update to the appropriate source folder
-          source: ./
+          image: us-central1-docker.pkg.dev/baldrick/cloud-run-source-deploy/baldrick/baldrick:latest
           env_vars: |
             PROJECT_ID=PROJECT_ID
             DATASET=DATASET
