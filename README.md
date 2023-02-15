@@ -68,12 +68,7 @@ Using the Google UI to set up secrets was easiest for us.
 
 Configure secret access:
 ```bash
-gcloud run services update baldrick --set-secrets="OPENAI_API_KEY=OPENAI_API_KEY:latest,SLACK_SIGNING_SECRET=SLACK_SIGNING_SECRET:latest,SLACK_BOT_TOKEN=SLACK_BOT_TOKEN:latest"
-```
-
-Configure environment variables
-```bash
-gcloud run services update baldrick --set-env-vars=PROJECT_ID=PROJECT_ID,DATASET=DATASET,TABLE=TABLE
+gcloud run services update baldrick --set-secrets="OPENAI_API_KEY=OPENAI_API_KEY:latest,SLACK_SIGNING_SECRET=SLACK_SIGNING_SECRET:latest,SLACK_BOT_TOKEN=SLACK_BOT_TOKEN:latest" --no-cpu-throttling --service-account=baldrick@baldrick.iam.gserviceaccount.com  --memory=2Gi --set-env-vars=PROJECT_ID=PROJECT_ID,DATASET=DATASET,TABLE=TABLE
 ```
 
 

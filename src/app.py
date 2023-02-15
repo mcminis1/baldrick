@@ -44,12 +44,12 @@ async def handle_app_mentions(ack, body, say):
     query = await get_sql_query_with_examples(user_question, activities)
     query_plan, query_errors = get_query_plan(query)
     if query_errors is not None:
-        query = await correct_sql_query(user_question, query_plan, query_errors)
+        query = await correct_sql_query(user_question, activities, query_plan, query_errors)
         query_plan, query_errors = get_query_plan(query)
 
     if query_errors is None:
-        query_explanation = await get_query_explanation(user_question, query)
         data = run_query(query)
+        query_explanation = await get_query_explanation(user_question, query, data)
         await say(
             VALID_QUERY_RESPONSE(
                 activities, query, query_explanation, data
