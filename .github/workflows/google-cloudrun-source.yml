@@ -127,9 +127,9 @@ jobs:
           # NOTE: If required, update to the appropriate source folder
           image: us-central1-docker.pkg.dev/baldrick/cloud-run-source-deploy/baldrick/baldrick:latest
           env_vars: |
-            PROJECT_ID=PROJECT_ID
-            DATASET=DATASET
-            TABLE=TABLE
+            PROJECT_ID=baldrick
+            DATASET=doodad_inc
+            TABLE=customer_stream
             TOKENIZERS_PARALLELISM=false
           secrets: |
               OPENAI_API_KEY=OPENAI_API_KEY:latest
