@@ -11,7 +11,7 @@ from google.cloud import bigquery
 client = bigquery.Client()
 
 dataset_id = "baldrick.doodad_inc"
-table_id = dataset_id + ".customer_stream_new"
+table_id = dataset_id + ".customer_stream"
 
 query = f"""
     CREATE TABLE IF NOT EXISTS {table_id}

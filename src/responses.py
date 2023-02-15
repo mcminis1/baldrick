@@ -7,61 +7,61 @@ class VALID_QUERY_RESPONSE:
 
     def __str__(self):
         return {
-	"blocks": [
-		{
-			"type": "image",
-			"image_url": "https://res.cloudinary.com/uktv/image/upload/b_rgb:000000,w_880,h_495/v1428917360/gvejybjvt3xw3h1sdmiw.png",
-			"alt_text": "Baldrick"
-		},
-		{
-			"type": "header",
-			"text": {
-				"type": "plain_text",
-				"text": "Your Query, My Lord",
-				"emoji": true
-			}
-		},
-		{
-			"type": "section",
-			"fields": [
-				{
-					"type": "mrkdwn",
-					"text": "*Query:*"
-				},
-				{
-					"type": "mrkdwn",
-					"text": f"{self.llm_query}"
+					"blocks": [
+						{
+							"type": "image",
+							"image_url": "https://res.cloudinary.com/uktv/image/upload/b_rgb:000000,w_880,h_495/v1428917360/gvejybjvt3xw3h1sdmiw.png",
+							"alt_text": "Baldrick"
+						},
+						{
+							"type": "header",
+							"text": {
+								"type": "plain_text",
+								"text": "Your Query, My Lord",
+								"emoji": true
+							}
+						},
+						{
+							"type": "section",
+							"fields": [
+								{
+									"type": "mrkdwn",
+									"text": "*Query:*"
+								},
+								{
+									"type": "mrkdwn",
+									"text": f"{self.llm_query}"
+								}
+							]
+						},
+						{
+							"type": "section",
+							"fields": [
+								{
+									"type": "mrkdwn",
+									"text": "*My Cunning Plan:*"
+								},
+								{
+									"type": "mrkdwn",
+									"text": f"{self.llm_query_plan}"
+								}
+							]
+						},
+						{
+							"type": "section",
+							"fields": [
+								{
+									"type": "mrkdwn",
+									"text": "*Results:*"
+								},
+								{
+									"type": "mrkdwn",
+									"text": "None"
+								}
+							]
+						}
+					]
 				}
-			]
-		},
-		{
-			"type": "section",
-			"fields": [
-				{
-					"type": "mrkdwn",
-					"text": "*My Cunning Plan:*"
-				},
-				{
-					"type": "mrkdwn",
-					"text": f"{self.llm_query_plan}"
-				}
-			]
-		},
-		{
-			"type": "section",
-			"fields": [
-				{
-					"type": "mrkdwn",
-					"text": "*Results:*"
-				},
-				{
-					"type": "mrkdwn",
-					"text": "None"
-				}
-			]
-		}
-	]
-}
 
 
 
@@ -79,7 +79,62 @@ class INVALID_QUERY_RESPONSE:
         self.llm_query = llm_query
 
     def __str__(self):
-        return f" activities:\n {self.activities}\n\n query:\n {self.llm_query}\n\n query plan is invalid\n"
+                return {
+					"blocks": [
+						{
+							"type": "image",
+							"image_url": "https://res.cloudinary.com/uktv/image/upload/b_rgb:000000,w_880,h_495/v1428917360/gvejybjvt3xw3h1sdmiw.png",
+							"alt_text": "Baldrick"
+						},
+						{
+							"type": "header",
+							"text": {
+								"type": "plain_text",
+								"text": "Your Query, My Lord",
+								"emoji": true
+							}
+						},
+						{
+							"type": "section",
+							"fields": [
+								{
+									"type": "mrkdwn",
+									"text": "*Query:*"
+								},
+								{
+									"type": "mrkdwn",
+									"text": f"{self.llm_query}"
+								}
+							]
+						},
+						{
+							"type": "section",
+							"fields": [
+								{
+									"type": "mrkdwn",
+									"text": "*My Cunning Plan:*"
+								},
+								{
+									"type": "mrkdwn",
+									"text": f"{self.llm_query_plan}"
+								}
+							]
+						},
+						{
+							"type": "section",
+							"fields": [
+								{
+									"type": "mrkdwn",
+									"text": "*Results:*"
+								},
+								{
+									"type": "mrkdwn",
+									"text": "None"
+								}
+							]
+						}
+					]
+				}
 
     def __repr__(self):
         return str(self)
