@@ -17,7 +17,7 @@ class VALID_QUERY_RESPONSE:
                     "text": {
                         "type": "plain_text",
                         "text": "Your Query, My Lord",
-                        "emoji": true,
+                        "emoji": True,
                     },
                 },
                 {
@@ -62,7 +62,7 @@ class INVALID_QUERY_RESPONSE:
                     "text": {
                         "type": "plain_text",
                         "text": "Your Query, My Lord",
-                        "emoji": true,
+                        "emoji": True,
                     },
                 },
                 {
@@ -76,14 +76,10 @@ class INVALID_QUERY_RESPONSE:
                     "type": "section",
                     "fields": [
                         {"type": "mrkdwn", "text": "*My Cunning Plan:*"},
-                        {"type": "mrkdwn", "text": "Is a turnip!"},
-                    ],
-                },
-                {
-                    "type": "section",
-                    "fields": [
-                        {"type": "mrkdwn", "text": "*Results:*"},
-                        {"type": "mrkdwn", "text": "None"},
+                        {
+                            "type": "mrkdwn",
+                            "text": "Is a turnip! Can you ask me a different way?",
+                        },
                     ],
                 },
             ]

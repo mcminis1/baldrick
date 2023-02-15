@@ -11,9 +11,11 @@ def get_query_plan(query: str) -> Tuple[Optional[str], Optional[str]]:
         dry_run=True, priority=bigquery.QueryPriority.BATCH
     )
     try:
+        logging.debug(f"bq plan for: {query}")
         query_job = client.query(query, config)
         while query_job.state != "DONE":
             query_job = client.get_job(query_job.job_id, location=query_job.location)
+        logging.debug(f"bq plan result: {query_job}")
         if query_job.errors is None:
             return "\n".join(query_job.query_plan), None
         else:
