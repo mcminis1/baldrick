@@ -26,6 +26,7 @@ app_handler = AsyncSlackRequestHandler(app)
 async def handle_app_mention(say):
     # Acknowledge command request
     await say("Yes M'Lord? Perhaps use /baldrick M'Lord?")
+    pass
 
 
 @app.event("message")
@@ -35,10 +36,10 @@ async def handle_message_events(ack):
 
 
 @app.command("/baldrick")
-async def handle_slash_baldrick(ack, body, respond):
+async def handle_slash_baldrick(ack, command, respond):
+    logging.debug(command)
     ack_this = await ack("I have a cunning plan...")
-    user_question = str(body["event"]["text"])
-    logging.debug(body)
+    user_question = str(command["text"])
     activities = await get_relevant_activities(user_question)
     query = await get_sql_query_with_examples(user_question, activities)
     query_plan, query_errors = get_query_plan(query)
