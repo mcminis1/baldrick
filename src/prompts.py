@@ -84,7 +84,7 @@ Double check that your query obeys the following rules.
 - Use JSON_QUERY(feature_json, '$.json_path') to access fields in the activity JSON.
 - Account for possible capitalization in in STRING values by casting them to lower case.
 - All queries should be FROM {fully_qualified_table_name}
-- time difference are computed like CAST(ts as DATE) > DATE_SUB(CURRENT_DATE(), INTERVAL 1 YEAR)
+- If the user wants to limit the time range for the question use CAST(ts as DATE) and CURRENT_DATE() appropriately in the where clause.
 
 Correct the SQL query so that it is syntactically correct SQL for BigQuery, still answers the user question, and eliminates the following error. Provide just the SQL query as your response.
 User Question: {self.user_question}
@@ -130,7 +130,7 @@ Double check that your query obeys the following rules.
 - Use JSON_QUERY(feature_json, '$.json_path') to access fields in the activity JSON.
 - Account for possible capitalization in in STRING values by casting them to lower case.
 - All queries should be FROM {fully_qualified_table_name}
-- time difference are computed like CAST(ts as DATE) > DATE_SUB(CURRENT_DATE(), INTERVAL 1 YEAR)
+- If the user wants to limit the time range for the question use CAST(ts as DATE) and CURRENT_DATE() appropriately in the where clause.
 
 Examples:
 { self.examples }

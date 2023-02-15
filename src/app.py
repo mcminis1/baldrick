@@ -36,9 +36,9 @@ async def handle_message_events(ack):
 
 
 @app.event("app_mention")
-async def handle_app_mentions(ack, body, say):
+async def handle_app_mentions(ack, body, say, respond):
     ack_this = await ack(f"I have a cunning plan...")
-    logging.debug(f"ack response: {ack_this}")
+    await say("uhmmm...")
     user_question = str(body["event"]["text"])
     activities = await get_relevant_activities(user_question)
     query = await get_sql_query_with_examples(user_question, activities)
@@ -52,11 +52,9 @@ async def handle_app_mentions(ack, body, say):
     if query_errors is None:
         data = run_query(query)
         query_explanation = await get_query_explanation(user_question, query, data)
-        await say(
-            VALID_QUERY_RESPONSE(activities, query, query_explanation, data).to_str()
-        )
+        await respond(VALID_QUERY_RESPONSE(query, query_explanation, data).get_json())
     else:
-        await say(INVALID_QUERY_RESPONSE(activities, query).to_str())
+        await respond(INVALID_QUERY_RESPONSE(query).get_json())
 
 
 api = FastAPI()
