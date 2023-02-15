@@ -35,10 +35,10 @@ async def handle_message_events(ack):
 
 
 @app.command("/baldrick")
-async def handle_slash_baldrick(ack, body, say, respond):
+async def handle_slash_baldrick(ack, text, say, respond, response_url):
     ack_this = await ack("I have a cunning plan...")
     await say("uhmmm...")
-    user_question = str(body["event"]["text"])
+    user_question = text
     activities = await get_relevant_activities(user_question)
     query = await get_sql_query_with_examples(user_question, activities)
     query_plan, query_errors = get_query_plan(query)
@@ -51,9 +51,14 @@ async def handle_slash_baldrick(ack, body, say, respond):
     if query_errors is None:
         data = run_query(query)
         query_explanation = await get_query_explanation(user_question, query, data)
-        await respond(VALID_QUERY_RESPONSE(query, query_explanation, data).get_json())
+        await respond(
+            VALID_QUERY_RESPONSE(query, query_explanation, data).get_json(),
+            response_url=response_url,
+        )
     else:
-        await respond(INVALID_QUERY_RESPONSE(query).get_json())
+        await respond(
+            INVALID_QUERY_RESPONSE(query).get_json(), response_url=response_url
+        )
 
 
 api = FastAPI()
