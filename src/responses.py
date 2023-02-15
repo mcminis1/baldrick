@@ -17,7 +17,6 @@ class VALID_QUERY_RESPONSE:
                     "text": {
                         "type": "plain_text",
                         "text": "Your Query, My Lord",
-                        "emoji": True,
                     },
                 },
                 {
@@ -62,7 +61,6 @@ class INVALID_QUERY_RESPONSE:
                     "text": {
                         "type": "plain_text",
                         "text": "Your Query, My Lord",
-                        "emoji": True,
                     },
                 },
                 {

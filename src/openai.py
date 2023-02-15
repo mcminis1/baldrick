@@ -32,7 +32,7 @@ async def get_query_explanation(user_question, sql_query, answer) -> str:
         temperature=0,
     )
     logging.debug(completion)
-    response = completion["choices"][0]["text"]
+    response = completion["choices"][0]["text"].strip()
     return response
 
 
@@ -45,13 +45,8 @@ async def get_sql_query_with_examples(user_question, activities) -> str:
         temperature=0,
     )
     logging.debug(completion)
-    response = completion["choices"][0]["text"]
-    start_query = response.find("BigQuery Statement:") + len("BigQuery Statement:")
-
-    query = response[start_query:]
-    # need to parse the output according to the prompt and return multiple parts
-    # e.g. (SQLQuery, SQLResult, Answer) from the QUERY_PROMPT
-    return query
+    response = completion["choices"][0]["text"].strip()
+    return response
 
 
 async def correct_sql_query(user_question, activities, query, error) -> str:
