@@ -7,9 +7,7 @@ client = bigquery.Client()
 
 
 def get_query_plan(query: str) -> Tuple[Optional[str], Optional[str]]:
-    config = bigquery.QueryJobConfig(
-        dry_run=True
-    )
+    config = bigquery.QueryJobConfig(dry_run=True)
     try:
         logging.debug(f"bq plan for: {query}")
         query_job = client.query(query, config)
@@ -27,9 +25,7 @@ def get_query_plan(query: str) -> Tuple[Optional[str], Optional[str]]:
 
 
 def run_query(query: str) -> Optional[List[Any]]:
-    config = bigquery.QueryJobConfig(
-        dry_run=False
-    )
+    config = bigquery.QueryJobConfig(dry_run=False)
     logging.debug(query)
     try:
         query_job = client.query(query, config)

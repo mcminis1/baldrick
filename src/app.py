@@ -38,7 +38,10 @@ async def handle_message_events(ack):
 @app.command("/baldrick")
 async def handle_slash_baldrick(ack, command, respond):
     user_question = str(command["text"])
-    ack_this = await ack(f"For your question: {user_question}\n I have a cunning plan...", response_type='in_channel')
+    ack_this = await ack(
+        f"For your question: {user_question}\n I have a cunning plan...",
+        response_type="in_channel",
+    )
     logging.debug(command)
     activities = await get_relevant_activities(user_question)
     query = await get_sql_query_with_examples(user_question, activities)
@@ -52,7 +55,11 @@ async def handle_slash_baldrick(ack, command, respond):
     if query_errors is None:
         data = run_query(query)
         query_explanation = await get_query_explanation(user_question, query, data)
-        await respond(VALID_QUERY_RESPONSE(user_question, query, query_explanation, data).get_json())
+        await respond(
+            VALID_QUERY_RESPONSE(
+                user_question, query, query_explanation, data
+            ).get_json()
+        )
     else:
         await respond(INVALID_QUERY_RESPONSE(user_question, query).get_json())
 

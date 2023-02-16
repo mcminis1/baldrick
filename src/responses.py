@@ -49,7 +49,7 @@ class VALID_QUERY_RESPONSE:
                         {"type": "mrkdwn", "text": f"{self.data}"},
                     ],
                 },
-            ]
+            ],
         }
 
 
@@ -98,5 +98,5 @@ class INVALID_QUERY_RESPONSE:
                         },
                     ],
                 },
-            ]
+            ],
         }
