@@ -1,7 +1,6 @@
 import logging
 from typing import Optional, Tuple, List
 from google.cloud import bigquery
-from typing import Any
 
 client = bigquery.Client()
 
@@ -24,7 +23,7 @@ def get_query_plan(query: str) -> Tuple[Optional[str], Optional[str]]:
     return None, {"error": "raised exception"}
 
 
-def run_query(query: str) -> Optional[List[Any]]:
+def run_query(query: str) -> Optional[List[str]]:
     config = bigquery.QueryJobConfig(dry_run=False)
     logging.debug(query)
     try:
@@ -34,7 +33,7 @@ def run_query(query: str) -> Optional[List[Any]]:
         df = query_job.to_dataframe()
         results = []
         for row in df.to_dict(orient="records"):
-            row_string = ', '.join([f"{k} = {v}" for k, v in row.items()]) + "\n"
+            row_string = ', '.join([f"{k} = {v}" for k, v in row.items()])
             results.append(row_string)
         return results
     except Exception as e:

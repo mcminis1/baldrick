@@ -46,7 +46,7 @@ class VALID_QUERY_RESPONSE:
                     "type": "section",
                     "fields": [
                         {"type": "mrkdwn", "text": "*Results:*"},
-                        {"type": "mrkdwn", "text": f"{self.data}"},
+                        {"type": "mrkdwn", "text": '\n'.join([x for x in self.data])},
                     ],
                 },
             ],
