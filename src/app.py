@@ -70,3 +70,9 @@ api = FastAPI()
 @api.post("/slack/events")
 async def endpoint(req: Request):
     return await app_handler.handle(req)
+
+
+@api.post("/slack/interactions")
+async def endpoint(req: Request):
+    logging.debug(req)
+    return await app_handler.handle(req)
