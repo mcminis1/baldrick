@@ -34,8 +34,8 @@ def run_query(query: str) -> Optional[List[Any]]:
         df = query_job.to_dataframe()
         results = []
         for row in df.to_dict(orient="records"):
-            row_string = ", ".join(["{k} = {v}" for k, v in row.items()])
-            results.append(row_string + "\n")
+            row_string = ', '.join([f"{k} = {v}" for k, v in row.items()]) + "\n"
+            results.append(row_string)
         return results
     except Exception as e:
         logging.error(e)
