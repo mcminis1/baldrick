@@ -1,10 +1,11 @@
 aiohttp==3.8.3
 bolt-python==0.7.1
+db-dtypes==1.0.5
 fastapi==0.89.1
 google-cloud-bigquery==3.5.0
 gunicorn==20.1.0
 openai==0.26.5
 pandas==1.5.3
-slack_bolt==1.16.1
 sentence-transformers==1.1.0
+slack_bolt==1.16.1
 uvicorn==0.20.0

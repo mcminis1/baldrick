@@ -1,21 +1,20 @@
 import logging
-import os
 from typing import Optional, Tuple, List
 from google.cloud import bigquery
+from typing import Any
 
 client = bigquery.Client()
 
 
 def get_query_plan(query: str) -> Tuple[Optional[str], Optional[str]]:
     config = bigquery.QueryJobConfig(
-        dry_run=True, priority=bigquery.QueryPriority.BATCH
+        dry_run=True
     )
     try:
         logging.debug(f"bq plan for: {query}")
         query_job = client.query(query, config)
-        while query_job.state != "DONE":
-            query_job = client.get_job(query_job.job_id, location=query_job.location)
-        logging.debug(f"bq plan result: {query_job}")
+        logging.debug(f"bq plan result: {query_job.query_plan}")
+        logging.debug(f"bq errors result: {query_job.errors}")
         if query_job.errors is None:
             return "\n".join(query_job.query_plan), None
         else:
@@ -27,15 +26,15 @@ def get_query_plan(query: str) -> Tuple[Optional[str], Optional[str]]:
     return None, {"error": "raised exception"}
 
 
-def run_query(query: str) -> Optional[List[str]]:
+def run_query(query: str) -> Optional[List[Any]]:
     config = bigquery.QueryJobConfig(
-        dry_run=False, priority=bigquery.QueryPriority.BATCH
+        dry_run=False
     )
     logging.debug(query)
     try:
         query_job = client.query(query, config)
-        while query_job.state != "DONE":
-            query_job = client.get_job(query_job.job_id, location=query_job.location)
+        logging.debug(f"bq plan result: {query_job.query_plan}")
+        logging.debug(f"bq errors result: {query_job.errors}")
         df = query_job.to_dataframe()
         results = []
         for _, row in df.iterrows():
