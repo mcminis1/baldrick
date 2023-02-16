@@ -2,43 +2,44 @@ apiVersion: serving.knative.dev/v1
 kind: Service
 metadata:
   name: baldrick
-  namespace: 'dnamespace'
-  selfLink: /apis/serving.knative.dev/v1/namespaces/dnamespace/services/baldrick
-  uid: 0d98a4af-77a3-4d63-b15d-6f4c56f43a63
-  resourceVersion: AAX0mE3pD5c
-  generation: 1
-  creationTimestamp: '2023-02-08T14:20:41.248769Z'
+  namespace: '12345678901'
+  selfLink: /apis/serving.knative.dev/v1/namespaces/12345678901/services/baldrick
+  uid: 30ef9857-4dc1-424e-8a95-168272e51f37
+  resourceVersion: AAX00r6nTEo
+  generation: 29
+  creationTimestamp: '2023-02-15T02:05:00.008053Z'
   labels:
     managed-by: github-actions
-    commit-sha: sha512xxxxxxxxxxxxxxxxxxx
+    commit-sha: fcf7a542c32b44cce0a821a58e85f3216ae92ff8
     cloud.googleapis.com/location: us-central1
   annotations:
-    run.googleapis.com/client-name: cloud-console
+    run.googleapis.com/client-name: gcloud
     serving.knative.dev/creator: jeremy@sawtoothdata.com
-    serving.knative.dev/lastModifier: jeremy@sawtoothdata.com
-    client.knative.dev/user-image: us-central1-docker.pkg.dev/baldrick/cloud-run-source-deploy/baldrick
-    run.googleapis.com/operation-id: 205ed960-c856-4ce6-b15f-b1dd7ea34c0c
+    serving.knative.dev/lastModifier: github-cicd-service-account@baldrick.iam.gserviceaccount.com
+    client.knative.dev/user-image: us-central1-docker.pkg.dev/baldrick/cloud-run-source-deploy/baldrick/baldrick:latest
+    run.googleapis.com/client-version: 418.0.0
+    run.googleapis.com/operation-id: eb62d7ff-7c5f-4436-97b9-7a54607a9567
     run.googleapis.com/ingress: all
     run.googleapis.com/ingress-status: all
 spec:
   template:
     metadata:
-      name: baldrick-00001-liy
+      name: baldrick-00001-zed
       labels:
         managed-by: github-actions
-        commit-sha: sha512xxxxxxxxxxxxxxxxxxx
+        commit-sha: fcf7a542c32b44cce0a821a58e85f3216ae92ff8
       annotations:
-        run.googleapis.com/client-name: cloud-console
-        client.knative.dev/user-image: us-central1-docker.pkg.dev/baldrick/cloud-run-source-deploy/baldrick
-        autoscaling.knative.dev/minScale: '1'
-        autoscaling.knative.dev/maxScale: '4'
+        run.googleapis.com/client-name: gcloud
+        client.knative.dev/user-image: us-central1-docker.pkg.dev/baldrick/cloud-run-source-deploy/baldrick/baldrick:latest
+        run.googleapis.com/client-version: 418.0.0
+        autoscaling.knative.dev/maxScale: '1'
         run.googleapis.com/cpu-throttling: 'false'
     spec:
-      containerConcurrency: 8
-      timeoutSeconds: 300
+      containerConcurrency: 1
+      timeoutSeconds: 30
       serviceAccountName: baldrick@baldrick.iam.gserviceaccount.com
       containers:
-      - image: us-central1-docker.pkg.dev/baldrick/cloud-run-source-deploy/baldrick
+      - image: us-central1-docker.pkg.dev/baldrick/cloud-run-source-deploy/baldrick/baldrick:latest
         ports:
         - name: http1
           containerPort: 8080
@@ -64,31 +65,33 @@ spec:
             secretKeyRef:
               key: latest
               name: SLACK_BOT_TOKEN
+        - name: TOKENIZERS_PARALLELISM
+          value: 'false'
         resources:
           limits:
             cpu: 1000m
-            memory: 512Mi
+            memory: 2Gi
   traffic:
   - percent: 100
     latestRevision: true
 status:
-  observedGeneration: 1
+  observedGeneration: 29
   conditions:
   - type: Ready
     status: 'True'
-    lastTransitionTime: '2023-02-13T17:37:42.753897Z'
+    lastTransitionTime: '2023-02-16T15:21:02.325026Z'
   - type: ConfigurationsReady
     status: 'True'
-    lastTransitionTime: '2023-02-13T17:37:35.775597Z'
+    lastTransitionTime: '2023-02-16T15:20:55.586413Z'
   - type: RoutesReady
     status: 'True'
-    lastTransitionTime: '2023-02-13T17:37:42.879127Z'
-  latestReadyRevisionName: baldrick-00001-liy
-  latestCreatedRevisionName: baldrick-00001-liy
+    lastTransitionTime: '2023-02-16T15:21:02.497866Z'
+  latestReadyRevisionName: baldrick-00001-zed
+  latestCreatedRevisionName: baldrick-00001-zed
   traffic:
-  - revisionName: baldrick-00001-liy
+  - revisionName: baldrick-00001-zed
     percent: 100
     latestRevision: true
-  url: https://baldrick-tou4uemkya-uc.a.run.app
+  url: https://baldrick-1234567890-uc.a.run.app
   address:
-    url: https://baldrick-tou4uemkya-uc.a.run.app
+    url: https://baldrick-1234567890-uc.a.run.app
