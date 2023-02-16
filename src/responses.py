@@ -1,8 +1,9 @@
 class VALID_QUERY_RESPONSE:
-    def __init__(self, llm_query, llm_query_plan, data):
+    def __init__(self, user_question, llm_query, llm_query_plan, data):
         self.llm_query = llm_query
         self.llm_query_plan = llm_query_plan
         self.data = data
+        self.user_question = user_question
 
     def get_json(self):
         return {
@@ -16,7 +17,7 @@ class VALID_QUERY_RESPONSE:
                     "type": "header",
                     "text": {
                         "type": "plain_text",
-                        "text": "Your Query, My Lord",
+                        "text": f"Your Query, My Lord\n    {self.user_question}",
                     },
                 },
                 {
@@ -45,8 +46,9 @@ class VALID_QUERY_RESPONSE:
 
 
 class INVALID_QUERY_RESPONSE:
-    def __init__(self, llm_query):
+    def __init__(self, user_question, llm_query):
         self.llm_query = llm_query
+        self.user_question = user_question
 
     def get_json(self):
         return {
@@ -60,7 +62,7 @@ class INVALID_QUERY_RESPONSE:
                     "type": "header",
                     "text": {
                         "type": "plain_text",
-                        "text": "Your Query, My Lord",
+                        "text": f"Your Query, My Lord\n    {self.user_question}",
                     },
                 },
                 {
