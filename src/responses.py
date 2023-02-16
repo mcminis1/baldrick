@@ -7,6 +7,7 @@ class VALID_QUERY_RESPONSE:
 
     def get_json(self):
         return {
+            "response_type": "in_channel",
             "blocks": [
                 {
                     "type": "image",
@@ -52,6 +53,7 @@ class INVALID_QUERY_RESPONSE:
 
     def get_json(self):
         return {
+            "response_type": "in_channel",
             "blocks": [
                 {
                     "type": "image",
