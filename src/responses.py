@@ -18,8 +18,15 @@ class VALID_QUERY_RESPONSE:
                     "type": "header",
                     "text": {
                         "type": "plain_text",
-                        "text": f"Your Query, My Lord\n    {self.user_question}",
+                        "text": f"Your Query, My Lord",
                     },
+                },
+                {
+                    "type": "section",
+                    "fields": [
+                        {"type": "mrkdwn", "text": "*Your Question:*"},
+                        {"type": "mrkdwn", "text": f"{self.user_question}"},
+                    ],
                 },
                 {
                     "type": "section",
@@ -64,8 +71,15 @@ class INVALID_QUERY_RESPONSE:
                     "type": "header",
                     "text": {
                         "type": "plain_text",
-                        "text": f"Your Query, My Lord\n    {self.user_question}",
+                        "text": f"Your Query, My Lord",
                     },
+                },
+                {
+                    "type": "section",
+                    "fields": [
+                        {"type": "mrkdwn", "text": "*Your Question:*"},
+                        {"type": "mrkdwn", "text": f"{self.user_question}"},
+                    ],
                 },
                 {
                     "type": "section",
