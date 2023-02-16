@@ -152,3 +152,25 @@ class INVALID_QUERY_RESPONSE:
                 },
             ],
         }
+
+class RETURN_BQ_QUERY:
+    def __init__(self, llm_query):
+        self.llm_query = llm_query
+
+    def get_json(self):
+        return {
+            "response_type": "in_channel",
+            "blocks": [
+                {
+                    "type": "header",
+                    "text": {"type": "plain_text", "text": "Right, 'ere ya go..."}
+                },
+                {
+                    "type": "section",
+                    "fields": [
+                        {"type": "mrkdwn", "text":"*BigQuery Statement*"},
+                        {"type": "mrkdwn", "text": f"{self.llm_query}"}
+                    ]
+                }
+            ]
+        }
