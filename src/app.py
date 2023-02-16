@@ -64,12 +64,12 @@ async def handle_slash_baldrick(ack, command, respond):
         await respond(INVALID_QUERY_RESPONSE(user_question, query).get_json())
 
 @app.action("results_approved")
-def results_approved(ack, body, respond):
-    ack()
+async def results_approved(ack, body, respond):
+    await ack()
 
     user_id = body["user"]["id"]
     # in_channel / dict
-    respond(
+    await respond(
         {
             "response_type": "in_channel",
             "replace_original": False,
@@ -77,18 +77,18 @@ def results_approved(ack, body, respond):
         }
     )
     # ephemeral / kwargs
-    respond(
+    await respond(
         replace_original=False,
         text=":white_check_mark: Done!",
     )
 
 @app.action("results_rejected")
-def results_rejected(ack, body, respond):
-    ack()
+async def results_rejected(ack, body, respond):
+    await ack()
 
     user_id = body["user"]["id"]
     # in_channel / dict
-    respond(
+    await respond(
         {
             "response_type": "in_channel",
             "replace_original": False,
@@ -96,18 +96,18 @@ def results_rejected(ack, body, respond):
         }
     )
     # ephemeral / kwargs
-    respond(
+    await respond(
         replace_original=False,
         text=":white_check_mark: Done!",
     )
 
 @app.action("view_bigqeury")
-def view_bigqeury(ack, body, respond):
-    ack()
+async def view_bigqeury(ack, body, respond):
+    await ack()
 
     user_id = body["user"]["id"]
     # in_channel / dict
-    respond(
+    await respond(
         {
             "response_type": "in_channel",
             "replace_original": False,
@@ -115,11 +115,10 @@ def view_bigqeury(ack, body, respond):
         }
     )
     # ephemeral / kwargs
-    respond(
+    await respond(
         replace_original=False,
         text=":white_check_mark: Done!",
     )
-
 
 
 api = FastAPI()
