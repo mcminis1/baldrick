@@ -33,7 +33,7 @@ def run_query(query: str) -> Optional[List[str]]:
         df = query_job.to_dataframe()
         results = []
         for row in df.to_dict(orient="records"):
-            row_string = ', '.join([f"{k} = {v}" for k, v in row.items()])
+            row_string = ", ".join([f"{k} = {v}" for k, v in row.items()])
             results.append(row_string)
         return results
     except Exception as e:
