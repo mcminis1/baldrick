@@ -37,9 +37,9 @@ async def handle_message_events(ack):
 
 @app.command("/baldrick")
 async def handle_slash_baldrick(ack, command, respond):
-    logging.debug(command)
-    ack_this = await ack(f"{user_question}\n I have a cunning plan...")
     user_question = str(command["text"])
+    ack_this = await ack(f"{user_question}\n I have a cunning plan...")
+    logging.debug(command)
     activities = await get_relevant_activities(user_question)
     query = await get_sql_query_with_examples(user_question, activities)
     query_plan, query_errors = get_query_plan(query)
