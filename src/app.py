@@ -107,7 +107,7 @@ async def results_rejected(ack, body, respond):
 async def view_bigqeury(ack, body, respond):
     await ack()
 
-    value_json = json.loads(body["payload"]["actions"]["value"])
+    value_json = json.loads(body["actions"][0]["value"])
     # in_channel / dict
     await respond(RETURN_BQ_STATEMENT(value_json['query']).get_json())
 
