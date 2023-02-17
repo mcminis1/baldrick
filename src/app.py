@@ -1,6 +1,7 @@
 import logging
 import sys
 import os
+import json
 from slack_bolt.async_app import AsyncApp
 from slack_bolt.adapter.fastapi.async_handler import AsyncSlackRequestHandler
 from fastapi import FastAPI, Request
@@ -106,9 +107,9 @@ async def results_rejected(ack, body, respond):
 async def view_bigqeury(ack, body, respond):
     await ack()
 
-    query = body["payload"]["actions"]["value"]
+    value_json = json.loads(body["payload"]["actions"]["value"])
     # in_channel / dict
-    await respond(RETURN_BQ_STATEMENT(query).get_json())
+    await respond(RETURN_BQ_STATEMENT(value_json['query']).get_json())
 
     # ephemeral / kwargs
     await respond(
