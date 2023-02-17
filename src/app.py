@@ -63,6 +63,7 @@ async def handle_slash_baldrick(ack, command, respond):
     else:
         await respond(INVALID_QUERY_RESPONSE(user_question, query).get_json())
 
+
 @app.action("results_approved")
 async def results_approved(ack, body, respond):
     await ack()
@@ -78,9 +79,9 @@ async def results_approved(ack, body, respond):
     )
     # ephemeral / kwargs
     await respond(
-        replace_original=False,
-        text=":white_check_mark: Done!",
+        replace_original=False, text=":white_check_mark: Done!",
     )
+
 
 @app.action("results_rejected")
 async def results_rejected(ack, body, respond):
@@ -97,23 +98,21 @@ async def results_rejected(ack, body, respond):
     )
     # ephemeral / kwargs
     await respond(
-        replace_original=False,
-        text=":white_check_mark: Done!",
+        replace_original=False, text=":white_check_mark: Done!",
     )
+
 
 @app.action("view_bigqeury")
 async def view_bigqeury(ack, body, respond):
     await ack()
 
-    user_id = body["user"]["id"]
-    query = body['payload']['actions']['value']
+    query = body["payload"]["actions"]["value"]
     # in_channel / dict
     await respond(RETURN_BQ_STATEMENT(query).get_json())
-    
+
     # ephemeral / kwargs
     await respond(
-        replace_original=False,
-        text=":white_check_mark: Done!",
+        replace_original=False, text=":white_check_mark: Done!",
     )
 
 
