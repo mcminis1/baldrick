@@ -106,14 +106,10 @@ async def view_bigqeury(ack, body, respond):
     await ack()
 
     user_id = body["user"]["id"]
+    query = body['payload']['actions']['value']
     # in_channel / dict
-    await respond(
-        {
-            "response_type": "in_channel",
-            "replace_original": False,
-            "text": f"<@{user_id}> clicked view_bigqeury! (in_channel)",
-        }
-    )
+    await respond(RETURN_BQ_STATEMENT(query).get_json())
+    
     # ephemeral / kwargs
     await respond(
         replace_original=False,
