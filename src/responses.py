@@ -79,7 +79,7 @@ class VALID_QUERY_RESPONSE:
                     "accessory": {
                         "type": "button",
                         "text": {"type": "plain_text", "text": "Indeed", "emoji": True},
-                        "value": "True",
+                        "value": f"{self.llm_query}",
                         "action_id": "view_bigqeury",
                     },
                 },
@@ -153,7 +153,7 @@ class INVALID_QUERY_RESPONSE:
             ],
         }
 
-class RETURN_BQ_QUERY:
+class RETURN_BQ_STATEMENT:
     def __init__(self, llm_query):
         self.llm_query = llm_query
 

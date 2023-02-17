@@ -11,7 +11,7 @@ from .openai import (
     correct_sql_query,
 )
 from .bigquery import run_query, get_query_plan
-from .responses import VALID_QUERY_RESPONSE, INVALID_QUERY_RESPONSE
+from .responses import VALID_QUERY_RESPONSE, INVALID_QUERY_RESPONSE, RETURN_BQ_STATEMENT
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
