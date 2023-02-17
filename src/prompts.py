@@ -1,6 +1,6 @@
 import os
 
-top_k = 10
+top_k = 5
 
 # this should query the schema to get the columns
 table_info = """
