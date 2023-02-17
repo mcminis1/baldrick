@@ -1,3 +1,6 @@
+import json
+
+
 class VALID_QUERY_RESPONSE:
     def __init__(self, user_question, llm_query, llm_query_plan, data):
         self.llm_query = llm_query
@@ -6,6 +9,10 @@ class VALID_QUERY_RESPONSE:
         self.user_question = user_question
 
     def get_json(self):
+        bq_return_value = json.dumps(
+            {"question": self.user_question, "query": self.llm_query}
+        )
+
         return {
             "response_type": "in_channel",
             "blocks": [
@@ -79,7 +86,7 @@ class VALID_QUERY_RESPONSE:
                     "accessory": {
                         "type": "button",
                         "text": {"type": "plain_text", "text": "Indeed", "emoji": True},
-                        "value": f"{self.llm_query}",
+                        "value": bq_return_value,
                         "action_id": "view_bigqeury",
                     },
                 },
@@ -153,6 +160,7 @@ class INVALID_QUERY_RESPONSE:
             ],
         }
 
+
 class RETURN_BQ_STATEMENT:
     def __init__(self, llm_query):
         self.llm_query = llm_query
@@ -163,14 +171,14 @@ class RETURN_BQ_STATEMENT:
             "blocks": [
                 {
                     "type": "header",
-                    "text": {"type": "plain_text", "text": "Right, 'ere ya go..."}
+                    "text": {"type": "plain_text", "text": "Right, 'ere ya go..."},
                 },
                 {
                     "type": "section",
                     "fields": [
-                        {"type": "mrkdwn", "text":"*BigQuery Statement*"},
-                        {"type": "mrkdwn", "text": f"{self.llm_query}"}
-                    ]
-                }
-            ]
+                        {"type": "mrkdwn", "text": "*BigQuery Statement*"},
+                        {"type": "mrkdwn", "text": f"{self.llm_query}"},
+                    ],
+                },
+            ],
         }
