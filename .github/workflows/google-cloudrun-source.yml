@@ -138,8 +138,8 @@ jobs:
               OPENAI_API_KEY=OPENAI_API_KEY:latest
               SLACK_SIGNING_SECRET=SLACK_SIGNING_SECRET:latest
               SLACK_BOT_TOKEN=SLACK_BOT_TOKEN:latest
-              DB_PASSWORD=DB_PASSWORD:latest          
-          flags: "--no-cpu-throttling --service-account=baldrick@baldrick.iam.gserviceaccount.com  --memory=2Gi"
+              DB_PASSWORD=DB_PASSWORD:latest
+          flags: "--no-cpu-throttling --service-account=baldrick@baldrick.iam.gserviceaccount.com  --memory=2Gi --vpc-connector=baldrickconnector"
 
       # If required, use the Cloud Run url output in later steps
       - name: Show Output
