@@ -10,3 +10,4 @@ pyvenv.cfg
 __pycache__
 
 src/data/embedding_model
+alembic.ini
