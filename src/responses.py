@@ -1,3 +1,6 @@
+import json
+
+
 class VALID_QUERY_RESPONSE:
     def __init__(self, user_question, llm_query, llm_query_plan, data):
         self.llm_query = llm_query
@@ -5,86 +8,100 @@ class VALID_QUERY_RESPONSE:
         self.data = data
         self.user_question = user_question
 
-    def get_json(self):
-        return {
-            "response_type": "in_channel",
-            "blocks": [
-                {
-                    "type": "image",
-                    "image_url": "https://mcminis1.github.io/img/baldrick/baldrick_grouse_sm.png",
-                    "alt_text": "Baldrick",
-                },
-                {
-                    "type": "header",
-                    "text": {"type": "plain_text", "text": "Your Query, M'Lord"},
-                },
-                {
-                    "type": "section",
-                    "fields": [
-                        {"type": "mrkdwn", "text": "*You asked me:*"},
-                        {"type": "mrkdwn", "text": f"{self.user_question}"},
-                    ],
-                },
-                {
-                    "type": "section",
-                    "fields": [
-                        {"type": "mrkdwn", "text": "*My Cunning Plan:*"},
-                        {"type": "mrkdwn", "text": f"{self.llm_query_plan}"},
-                    ],
-                },
-                {
-                    "type": "section",
-                    "fields": [
-                        {"type": "mrkdwn", "text": "*Results:*"},
-                        {"type": "mrkdwn", "text": "\n".join([x for x in self.data])},
-                    ],
-                },
-                {
-                    "type": "section",
-                    "text": {"type": "mrkdwn", "text": "*Are you satisfied M'Lord?*"},
-                },
-                {
-                    "type": "actions",
-                    "elements": [
-                        {
-                            "type": "button",
-                            "text": {
-                                "type": "plain_text",
-                                "text": "Verily",
-                                "emoji": True,
-                            },
-                            "style": "primary",
-                            "value": "True",
-                            "action_id": "results_approved",
-                        },
-                        {
-                            "type": "button",
-                            "text": {
-                                "type": "plain_text",
-                                "text": "Nay",
-                                "emoji": True,
-                            },
-                            "style": "danger",
-                            "value": "False",
-                            "action_id": "results_rejected",
-                        },
-                    ],
-                },
-                {
-                    "type": "section",
-                    "text": {
-                        "type": "mrkdwn",
-                        "text": "*Care to view the BigQuery statement?*",
-                    },
-                    "accessory": {
+    def _create_result_blocks(self):
+        bq_return_value = json.dumps(
+            {"question": self.user_question, "query": self.llm_query}
+        )
+
+        pre_result = [
+            {
+                "type": "image",
+                "image_url": "https://mcminis1.github.io/img/baldrick/baldrick_grouse_sm.png",
+                "alt_text": "Baldrick",
+            },
+            {
+                "type": "header",
+                "text": {"type": "plain_text", "text": "Your Query, M'Lord"},
+            },
+            {
+                "type": "section",
+                "fields": [
+                    {"type": "mrkdwn", "text": "*You asked me:*"},
+                    {"type": "mrkdwn", "text": f"{self.user_question}"},
+                ],
+            },
+            {
+                "type": "section",
+                "fields": [
+                    {"type": "mrkdwn", "text": "*My Cunning Plan:*"},
+                    {"type": "mrkdwn", "text": f"{self.llm_query_plan}"},
+                ],
+            },
+            {"type": "header", "text": {"type": "plain_text", "text": "Results:"}},
+            {"type": "divider"},
+        ]
+
+        post_result = [
+            {
+                "type": "section",
+                "text": {"type": "mrkdwn", "text": "*Are you satisfied M'Lord?*"},
+            },
+            {
+                "type": "actions",
+                "elements": [
+                    {
                         "type": "button",
-                        "text": {"type": "plain_text", "text": "Indeed", "emoji": True},
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Verily",
+                            "emoji": True,
+                        },
+                        "style": "primary",
                         "value": "True",
-                        "action_id": "view_bigqeury",
+                        "action_id": "results_approved",
                     },
+                    {
+                        "type": "button",
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Nay",
+                            "emoji": True,
+                        },
+                        "style": "danger",
+                        "value": "False",
+                        "action_id": "results_rejected",
+                    },
+                ],
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "*Care to view the BigQuery statement?*",
                 },
-            ],
-        }
+                "accessory": {
+                    "type": "button",
+                    "text": {"type": "plain_text", "text": "Indeed", "emoji": True},
+                    "value": bq_return_value,
+                    "action_id": "view_bigqeury",
+                },
+            },
+        ]
+
+        for row in self.data:
+            fields = []
+            for k, v in row.items():
+                k_col = {"type": "mrkdwn", "text": "*" + str(k) + "*"}
+                v_col = {"type": "mrkdwn", "text": str(v).strip('"')}
+                fields.extend([k_col, v_col])
+
+            section = {"type": "section", "fields": fields}
+            pre_result.extend(section)
+
+        return pre_result.extend(post_result)
+
+    def get_json(self):
+        return {"response_type": "in_channel", "blocks": self._create_result_blocks()}
 
 
 class INVALID_QUERY_RESPONSE:
@@ -148,6 +165,29 @@ class INVALID_QUERY_RESPONSE:
                             "value": "None",
                             "action_id": "Submit_new_query",
                         }
+                    ],
+                },
+            ],
+        }
+
+
+class RETURN_BQ_STATEMENT:
+    def __init__(self, llm_query):
+        self.llm_query = llm_query
+
+    def get_json(self):
+        return {
+            "response_type": "in_channel",
+            "blocks": [
+                {
+                    "type": "header",
+                    "text": {"type": "plain_text", "text": "Right, 'ere ya go..."},
+                },
+                {
+                    "type": "section",
+                    "fields": [
+                        {"type": "mrkdwn", "text": "*BigQuery Statement*"},
+                        {"type": "mrkdwn", "text": f"{self.llm_query}"},
                     ],
                 },
             ],

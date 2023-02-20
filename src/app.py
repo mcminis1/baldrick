@@ -1,7 +1,7 @@
 import logging
 import sys
 import os
-
+import json
 from slack_bolt.async_app import AsyncApp
 from slack_bolt.adapter.fastapi.async_handler import AsyncSlackRequestHandler
 from fastapi import FastAPI, Request, Depends
@@ -13,10 +13,10 @@ from .openai import (
     correct_sql_query,
 )
 from .bigquery import run_query, get_query_plan
-from .responses import VALID_QUERY_RESPONSE, INVALID_QUERY_RESPONSE
 from .database import session_maker
 from .models import UserQuestions
 from sqlalchemy.orm import Session
+from .responses import VALID_QUERY_RESPONSE, INVALID_QUERY_RESPONSE, RETURN_BQ_STATEMENT
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
@@ -87,6 +87,7 @@ async def handle_slash_baldrick(ack, command, respond, context):
             await respond(INVALID_QUERY_RESPONSE(user_question, query).get_json())
         await session.commit()
 
+
 @app.action("results_approved")
 async def results_approved(ack, body, respond):
     await ack()
@@ -103,8 +104,7 @@ async def results_approved(ack, body, respond):
     )
     # ephemeral / kwargs
     await respond(
-        replace_original=False,
-        text=":white_check_mark: Done!",
+        replace_original=False, text=":white_check_mark: Done!",
     )
 
 
@@ -124,8 +124,7 @@ async def results_rejected(ack, body, respond):
     )
     # ephemeral / kwargs
     await respond(
-        replace_original=False,
-        text=":white_check_mark: Done!",
+        replace_original=False, text=":white_check_mark: Done!",
     )
 
 
@@ -134,19 +133,13 @@ async def view_bigqeury(ack, body, respond):
     await ack()
     logging.debug(body)
 
-    user_id = body["user"]["id"]
+    value_json = json.loads(body["actions"][0]["value"])
     # in_channel / dict
-    await respond(
-        {
-            "response_type": "in_channel",
-            "replace_original": False,
-            "text": f"<@{user_id}> clicked view_bigqeury! (in_channel)",
-        }
-    )
+    await respond(RETURN_BQ_STATEMENT(value_json['query']).get_json())
+
     # ephemeral / kwargs
     await respond(
-        replace_original=False,
-        text=":white_check_mark: Done!",
+        replace_original=False, text=":white_check_mark: Done!",
     )
 
 api = FastAPI()
