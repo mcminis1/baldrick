@@ -30,11 +30,7 @@ def run_query(query: str) -> Optional[List[str]]:
         query_job = client.query(query, config)
         logging.debug(f"bq plan result: {query_job.query_plan}")
         logging.debug(f"bq errors result: {query_job.errors}")
-        df = query_job.to_dataframe()
-        results = []
-        for row in df.to_dict(orient="records"):
-            row_string = ", ".join([f"{k} = {v}" for k, v in row.items()])
-            results.append(row_string)
+        results = query_job.to_dataframe().to_dict(orient="records")
         return results
     except Exception as e:
         logging.error(e)

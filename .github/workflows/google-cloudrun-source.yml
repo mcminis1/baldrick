@@ -131,10 +131,14 @@ jobs:
             DATASET=doodad_inc
             TABLE=customer_stream
             TOKENIZERS_PARALLELISM=false
+            DB_USER=postgres
+            DB_DATABASE=baldrick
+            DB_HOST=10.63.48.3
           secrets: |
               OPENAI_API_KEY=OPENAI_API_KEY:latest
               SLACK_SIGNING_SECRET=SLACK_SIGNING_SECRET:latest
-              SLACK_BOT_TOKEN=SLACK_BOT_TOKEN:latest          
+              SLACK_BOT_TOKEN=SLACK_BOT_TOKEN:latest
+              DB_PASSWORD=DB_PASSWORD:latest          
           flags: "--no-cpu-throttling --service-account=baldrick@baldrick.iam.gserviceaccount.com  --memory=2Gi"
 
       # If required, use the Cloud Run url output in later steps
