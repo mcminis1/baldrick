@@ -13,6 +13,12 @@ Current tech stack:
 
 ### How it works
 
+User Interface:
+
+![Asking a Question](img/slack_example_1_question.png?raw=true "Asking Baldrick a Question")
+
+
+
 Offline
 1. A collection of (business question, SQL query) pairs is collected
 2. An embedding is computed for the business questions using an embedding model, ["sentence-transformers/all-mpnet-base-v1"](https://huggingface.co/sentence-transformers/all-mpnet-base-v1).
@@ -71,7 +77,7 @@ uvicorn --port 8080 --host 0.0.0.0 --reload src.app:api
 
 If you're using localhost to serve a db, then request verification is turned off. You can use the curl_service.sh script to test if things are working end to end. You should see entries made in your database table when things are all set up correctly.
 
-## Deploy to Google Cloud Run
+### Deploy to Google Cloud Run
 
 If you choose to use GCP for this here is some getting started help. You can look at the github action to see some of the env params and VM settings we needed to use.
 
