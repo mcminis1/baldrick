@@ -78,12 +78,12 @@ async def handle_slash_baldrick(ack, command, respond, context):
         if query_errors is None:
             data = run_query(query)
             query_explanation = await get_query_explanation(user_question, query, data)
-
-            q_response = await respond(
-                VALID_QUERY_RESPONSE(
+            blocks = VALID_QUERY_RESPONSE(
                     user_question, query, query_explanation, data, new_user_question.id
                 ).get_json()
-            )
+            logging.debug(f"blocks: {blocks}")
+
+            q_response = await respond(blocks)
             logging.debug(f"response: {q_response.status_code} - {q_response.body}")
 
             new_user_question.was_valid = True
