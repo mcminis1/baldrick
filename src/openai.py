@@ -1,6 +1,7 @@
 import os
 import openai
 import logging
+from typing import List
 from .prompts import (
     EVENT_CHOOSER_PROMPT,
     QUERY_PLAN_EXPLANATION,
@@ -12,7 +13,7 @@ from .embeddings import get_top_k_matches
 openai.api_key = os.environ.get("OPENAI_API_KEY")
 
 
-async def get_relevant_activities(user_question) -> str:
+async def get_relevant_activities(user_question) -> List[str]:
     completion = await openai.Completion.acreate(
         engine="text-davinci-003",
         prompt=EVENT_CHOOSER_PROMPT(user_question).to_str(),

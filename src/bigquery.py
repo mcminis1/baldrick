@@ -1,11 +1,11 @@
 import logging
-from typing import Optional, Tuple, List
+from typing import Optional, Tuple, Dict, Any
 from google.cloud import bigquery
 
 client = bigquery.Client()
 
 
-def get_query_plan(query: str) -> Tuple[Optional[str], Optional[str]]:
+def get_query_plan(query: str) -> Tuple[Optional[str], Optional[Dict]]:
     config = bigquery.QueryJobConfig(dry_run=True)
     try:
         logging.debug(f"bq plan for: {query}")
@@ -23,7 +23,7 @@ def get_query_plan(query: str) -> Tuple[Optional[str], Optional[str]]:
     return None, {"error": "raised exception"}
 
 
-def run_query(query: str) -> Optional[List[str]]:
+def run_query(query: str) -> Optional[Dict[str, Any]]:
     config = bigquery.QueryJobConfig(dry_run=False)
     logging.debug(query)
     try:

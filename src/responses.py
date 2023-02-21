@@ -1,4 +1,5 @@
 import json
+from typing import Dict, Any
 
 
 class VALID_QUERY_RESPONSE:
@@ -9,7 +10,7 @@ class VALID_QUERY_RESPONSE:
         self.user_question = user_question
         self.session_id = session_id
 
-    def _create_result_blocks(self):
+    def _create_result_blocks(self) -> Dict[str, Any]:
         bq_return_value = json.dumps(
             {
                 "question": self.user_question,
@@ -106,7 +107,7 @@ class VALID_QUERY_RESPONSE:
 
         return results
 
-    def get_json(self):
+    def get_json(self) -> Dict[str, Any]:
         return {"response_type": "in_channel", "blocks": self._create_result_blocks()}
 
 
@@ -115,7 +116,7 @@ class INVALID_QUERY_RESPONSE:
         self.llm_query = llm_query
         self.user_question = user_question
 
-    def get_json(self):
+    def get_json(self) -> Dict[str, Any]:
         return {
             "response_type": "in_channel",
             "blocks": [
@@ -181,7 +182,7 @@ class RETURN_BQ_STATEMENT:
     def __init__(self, llm_query):
         self.llm_query = llm_query
 
-    def get_json(self):
+    def get_json(self) -> Dict[str, Any]:
         return {
             "response_type": "in_channel",
             "blocks": [

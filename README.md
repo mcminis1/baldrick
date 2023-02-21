@@ -22,13 +22,15 @@ Online
 
 ### Todo
 
-Some items that could be on the roadmap depending on interest:
+Some items that could be on the road map depending on interest:
 - Auto-infer the schema.
-- Generalize to Snowflake and Redshift
-- Add support for Discord
+- Generalize to Snowflake and Redshift.
+- Add support for Discord.
 - Automatically index (business question, SQL queries) as examples when users approve them.
-- Schema migration layer for SQL queries
+- Load initial examples into postgres instead of loading from csv.
+- Schema migration layer for SQL queries.
 - Support for Cohere and AI21 LLMs.
+- Refine ambiguous queries with dialogue.
 
 If you are interested in extending the functionality, or want to use it for something, please reach out to the maintainers.
 

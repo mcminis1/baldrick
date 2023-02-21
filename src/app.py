@@ -35,20 +35,20 @@ app_handler = AsyncSlackRequestHandler(app)
 
 
 @app.event("app_mention")
-async def handle_app_mention(say):
+async def handle_app_mention(say) -> None:
     # Acknowledge command request
     await say("Yes M'Lord? Perhaps use /baldrick M'Lord?")
     pass
 
 
 @app.event("message")
-async def handle_message_events(ack):
+async def handle_message_events(ack) -> None:
     await ack()
     pass
 
 
 @app.command("/baldrick")
-async def handle_slash_baldrick(ack, command, respond, context):
+async def handle_slash_baldrick(ack, command, respond, context) -> None:
     user_question = str(command["text"])
     new_user_question = UserQuestions(question=user_question, user=command["user_name"])
     ack_this = await ack(
@@ -79,11 +79,10 @@ async def handle_slash_baldrick(ack, command, respond, context):
             data = run_query(query)
             query_explanation = await get_query_explanation(user_question, query, data)
             blocks = VALID_QUERY_RESPONSE(
-                    user_question, query, query_explanation, data, new_user_question.id
-                ).get_json()
+                user_question, query, query_explanation, data, new_user_question.id
+            ).get_json()
 
             q_response = await respond(blocks)
-            logging.debug(f"response: {q_response.status_code} - {q_response.body}")
 
             new_user_question.was_valid = True
             new_user_question.query_explanation = query_explanation
@@ -92,14 +91,13 @@ async def handle_slash_baldrick(ack, command, respond, context):
             q_response = await respond(
                 INVALID_QUERY_RESPONSE(user_question, query).get_json()
             )
-            logging.debug(f"response: {q_response.status_code} - {q_response.body}")
 
             new_user_question.was_valid = False
             await session.commit()
 
 
 @app.action("results_approved")
-async def results_approved(ack, body, respond):
+async def results_approved(ack, body, respond) -> None:
     await ack()
 
     user_id = body["user"]["id"]
@@ -119,18 +117,13 @@ async def results_approved(ack, body, respond):
         {
             "response_type": "in_channel",
             "replace_original": False,
-            "text": f"<@{user_id}> clicked results_approved!",
+            "text": f"<@{user_id}> Excellent! :white_check_mark:",
         }
-    )
-    # ephemeral / kwargs
-    await respond(
-        replace_original=False,
-        text=":white_check_mark: Done!",
     )
 
 
 @app.action("results_rejected")
-async def results_rejected(ack, body, respond):
+async def results_rejected(ack, body, respond) -> None:
     await ack()
 
     user_id = body["user"]["id"]
@@ -151,18 +144,13 @@ async def results_rejected(ack, body, respond):
         {
             "response_type": "in_channel",
             "replace_original": False,
-            "text": f"<@{user_id}> clicked results_rejected!",
+            "text": f"<@{user_id}> The SQL wasn't right. :cry:",
         }
-    )
-    # ephemeral / kwargs
-    await respond(
-        replace_original=False,
-        text=":white_check_mark: Done!",
     )
 
 
 @app.action("view_bigqeury")
-async def view_bigqeury(ack, body, respond):
+async def view_bigqeury(ack, body, respond) -> None:
     await ack()
     logging.debug(body)
 
@@ -181,21 +169,15 @@ async def view_bigqeury(ack, body, respond):
     # in_channel / dict
     await respond(RETURN_BQ_STATEMENT(value_json["query"]).get_json())
 
-    # ephemeral / kwargs
-    await respond(
-        replace_original=False,
-        text=":white_check_mark: Done!",
-    )
-
 
 api = FastAPI()
 
 
 @api.post("/slack/events")
-async def events_endpoint(req: Request):
+async def events_endpoint(req: Request) -> None:
     return await app_handler.handle(req)
 
 
 @api.post("/slack/interactions")
-async def interactions_endpoint(req: Request):
+async def interactions_endpoint(req: Request) -> None:
     return await app_handler.handle(req)

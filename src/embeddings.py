@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+from typing import List, Tuple
 from sentence_transformers import SentenceTransformer, util
 from .data import DATA_PATH, MODEL_PATH
 
@@ -15,7 +16,7 @@ queries = df["Query"].to_list()
 lookup = [(e, p.strip(), q.strip()) for e, p, q in zip(embeddings, prompts, queries)]
 
 
-def get_top_k_matches(user_query, top_k=4, mex_length=512):
+def get_top_k_matches(user_query, top_k=4, mex_length=512) -> List[Tuple[str, str]]:
     matches = []
     e = model.encode(user_query)
     for embedding, prompt, query in lookup:
