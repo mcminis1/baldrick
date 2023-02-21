@@ -15,7 +15,13 @@ Current tech stack:
 
 User Interface:
 
+1. First you use a slash command to ask Baldrick a question. He should reply quickly ot let you know he got the request. If he didn;t you can wait a few seconds and try again. Sometimes there is a little latency on app startup.
 ![Asking a Question](img/slack_example_1_question.png?raw=true "Asking Baldrick a Question")
+
+2. Next, You should get a response with your results and an explanation of how he got them.
+![Query Results](img/slack_example_1.png?raw=true "Baldrick giving an answer")
+
+
 
 
 
