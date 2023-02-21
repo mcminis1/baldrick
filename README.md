@@ -11,7 +11,32 @@ Current tech stack:
 5. OpenAI text-davinci-003 is used to generate SQL.
 6. The `sentence-transformers` package is used to compute embeddings.
 
-### How it works
+### How it works: The User Experience
+
+User Interface:
+
+1. First you use a slash command to ask Baldrick a question. He should reply quickly to let you know he got the request. If he didn't you can wait a few seconds and try again. Sometimes there is a little latency on app startup.
+
+![Asking a question](img/slack_example_1_question.png?raw=true "Asking Baldrick a Question")
+
+2. Next, You should get a response with your results and an explanation of how he got them.
+
+![Query results](img/slack_example_1.png?raw=true "Baldrick giving an answer")
+
+3. At the bottom of the results block, there are some interactive elements you can use. You are able to approve or disapprove the results, or view the SQL. If you approve or disapprove the results, that is recorded in the database and can be used in the future to improve the quality of the queries Baldrick performs.
+
+![Interactive elements](img/slack_example_1_interaction.png?raw=true "Baldrick asking for feedback")
+
+4. If you approve or disapprove of the results, Baldrick will let you know that he got the message.
+
+![Feedback on results](img/slack_example_1_feedback.png?raw=true "Baldrick acknowledging feedback")
+
+5. If you choose to view the SQL it's displayed as well.
+
+![View SQL](img/slack_example_1_query.png?raw=true "Baldrick showing you the SQL query")
+
+
+### How it works: The Back End
 
 Offline
 1. A collection of (business question, SQL query) pairs is collected
@@ -71,7 +96,7 @@ uvicorn --port 8080 --host 0.0.0.0 --reload src.app:api
 
 If you're using localhost to serve a db, then request verification is turned off. You can use the curl_service.sh script to test if things are working end to end. You should see entries made in your database table when things are all set up correctly.
 
-## Deploy to Google Cloud Run
+### Deploy to Google Cloud Run
 
 If you choose to use GCP for this here is some getting started help. You can look at the github action to see some of the env params and VM settings we needed to use.
 
