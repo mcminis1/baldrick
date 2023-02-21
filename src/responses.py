@@ -18,7 +18,7 @@ class VALID_QUERY_RESPONSE:
             }
         )
 
-        pre_result = [
+        results = [
             {
                 "type": "image",
                 "image_url": "https://mcminis1.github.io/img/baldrick/baldrick_grouse_sm.png",
@@ -46,53 +46,6 @@ class VALID_QUERY_RESPONSE:
             {"type": "divider"},
         ]
 
-        post_result = [
-            {
-                "type": "section",
-                "text": {"type": "mrkdwn", "text": "*Are you satisfied M'Lord?*"},
-            },
-            {
-                "type": "actions",
-                "elements": [
-                    {
-                        "type": "button",
-                        "text": {
-                            "type": "plain_text",
-                            "text": "Verily",
-                            "emoji": True,
-                        },
-                        "style": "primary",
-                        "value": "True",
-                        "action_id": "results_approved",
-                    },
-                    {
-                        "type": "button",
-                        "text": {
-                            "type": "plain_text",
-                            "text": "Nay",
-                            "emoji": True,
-                        },
-                        "style": "danger",
-                        "value": "False",
-                        "action_id": "results_rejected",
-                    },
-                ],
-            },
-            {
-                "type": "section",
-                "text": {
-                    "type": "mrkdwn",
-                    "text": "*Care to view the BigQuery statement?*",
-                },
-                "accessory": {
-                    "type": "button",
-                    "text": {"type": "plain_text", "text": "Indeed", "emoji": True},
-                    "value": bq_return_value,
-                    "action_id": "view_bigqeury",
-                },
-            },
-        ]
-
         for row in self.data:
             fields = []
             for k, v in row.items():
@@ -100,11 +53,58 @@ class VALID_QUERY_RESPONSE:
                 v_col = {"type": "mrkdwn", "text": str(v).strip('"')}
                 fields.extend([k_col, v_col])
 
-            section = {"type": "section", "fields": fields}
-            pre_result.extend(section)
+            results.append({"type": "section", "fields": fields})
 
-        pre_result.extend(post_result)
-        return pre_result
+        results.extend(
+            [
+                {
+                    "type": "section",
+                    "text": {"type": "mrkdwn", "text": "*Are you satisfied M'Lord?*"},
+                },
+                {
+                    "type": "actions",
+                    "elements": [
+                        {
+                            "type": "button",
+                            "text": {
+                                "type": "plain_text",
+                                "text": "Verily",
+                                "emoji": True,
+                            },
+                            "style": "primary",
+                            "value": "True",
+                            "action_id": "results_approved",
+                        },
+                        {
+                            "type": "button",
+                            "text": {
+                                "type": "plain_text",
+                                "text": "Nay",
+                                "emoji": True,
+                            },
+                            "style": "danger",
+                            "value": "False",
+                            "action_id": "results_rejected",
+                        },
+                    ],
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "*Care to view the BigQuery statement?*",
+                    },
+                    "accessory": {
+                        "type": "button",
+                        "text": {"type": "plain_text", "text": "Indeed", "emoji": True},
+                        "value": bq_return_value,
+                        "action_id": "view_bigqeury",
+                    },
+                },
+            ]
+        )
+
+        return results
 
     def get_json(self):
         return {"response_type": "in_channel", "blocks": self._create_result_blocks()}
