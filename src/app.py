@@ -20,10 +20,16 @@ from .responses import VALID_QUERY_RESPONSE, INVALID_QUERY_RESPONSE, RETURN_BQ_S
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
+# this makes it easier to curl the route and test functionality locally
+local_deployment = os.environ.get("DB_HOST") == 'localhost'
+verify_requests = True
+if local_deployment:
+    verify_requests = False
+
 app = AsyncApp(
     token=os.environ.get("SLACK_BOT_TOKEN"),
     signing_secret=os.environ.get("SLACK_SIGNING_SECRET"),
-    request_verification_enabled=False,
+    request_verification_enabled=verify_requests,
 )
 app_handler = AsyncSlackRequestHandler(app)
 

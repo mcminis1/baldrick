@@ -1,76 +1,61 @@
 
+## Baldrick
 
+Baldrick is your friends BI chatbot! Currently Baldrick is a Proof-of-Concept; only useful for a very specific set of users. It's set up to work on slack, with BigQuery, and the [activity schema 2.0](https://github.com/ActivitySchema/ActivitySchema/blob/main/2.0.md).
+
+### How it works
+
+Offline
+1. A collection of (business question, SQL query) pairs is collected
+2. An embedding is computed for the business questions using an embedding model, ["sentence-transformers/all-mpnet-base-v1"](https://huggingface.co/sentence-transformers/all-mpnet-base-v1).
+3. The (embedding, business question, SQL query) triplet is stored in a list.
+
+Online
+1. Listens in a slack channel for the slash command `/baldrick {user question}`
+2. The user question is parsed out of the slash command and, along with all of the different activity types in our activity Schema, we form a prompt that limits the number of activities we should include in the SQL query. Choosing the activity schema limits complexity due to joins, but does not eliminate the complexity of a varying schema (in JSON for the 2nd version of the activity schema) based on the event.
+3. The top 5 most similar business questions are retrieved from our corpus. This is done using the dot product similarity with our corpus.
+4. A prompt is formed which queries GPT-3 for a new SQL query. It includes these similar business question, SQL query pairs (up to some constraints on prompt length).
+5. That SQL query is tested against bigquery to determine if it errors or runs.
+6. [Optional] If step 5 errors, a new prompt is formed with some common reasons these queries fail, the business problem, SQL query, and error. That is then sent to GPT-3 for a single retry.
+7. The query is run and results are returned.
+8. The business problem, query plan, SQL, and data are used in another prompt which is sent to GPT-3 for a "human readable" explanation of how the query was done and what the results are.
 
 ## Setup
 
+There is a fair amount of setup to get this running. You need: a slack app, a google project and bigquery, a postgres db, and an OpenAI API account key.
+
 Following the [bolt_python quickstart](https://slack.dev/bolt-python/tutorial/getting-started), you'll need to create an app, get your credentials, and set up permissions.
 
-## App Manifest
+You'll need to set up an OpenAI account and generate an API key.
 
-```yaml
-display_information:
-  name: baldrick
-  description: Your SQL dogsbody
-  background_color: "#474e66"
-features:
-  bot_user:
-    display_name: baldrick
-    always_online: true
-  slash_commands:
-    - command: /baldrick
-      url: https://{{ your host }}/slack/events
-      description: ask baldrick a question
-      usage_hint: ask baldrick to query your data warehouse for an answer
-      should_escape: true
-oauth_config:
-  scopes:
-    bot:
-      - app_mentions:read
-      - channels:history
-      - chat:write
-      - commands
-      - mpim:history
-settings:
-  event_subscriptions:
-    request_url: https://{{ your host }}/slack/events
-    bot_events:
-      - app_mention
-      - message.channels
-      - message.mpim
-  interactivity:
-    is_enabled: true
-    request_url: https://{{ your host }}/slack/events
-  org_deploy_enabled: false
-  socket_mode_enabled: false
-  token_rotation_enabled: false
-```
+You'll need a postgres db (though it would be easy to generalize to another db). You will also need to edit the alembic.ini file so the username/password/host are all right for your db.
 
-## Local Dev
+You'll need ot use `gcloud` to set up credentials and your project for BigQuery. The initial steps in the following section go over this part.
 
+You should then be able to spin up a local server.
 ```bash
 pip install -r requirements.txt
-export SLACK_SIGNING_SECRET=***
-export SLACK_BOT_TOKEN=xoxb-***
-uvicorn src.app:api --reload --port 3000 --log-level debug
+
+export SLACK_BOT_TOKEN=
+export SLACK_SIGNING_SECRET=
+export DB_DATABASE=
+export DB_USER=
+export DB_HOST=
+export DB_PASSWORD=
+export OPENAI_API_KEY=
+uvicorn --port 8080 --host 0.0.0.0 --reload src.app:api 
 ```
 
+If you're using localhost to serve a db, then request verification is turned off. You can use the curl_service.sh script to test if things are working end to end. You should see entries made in your database table when things are all set up correctly.
+
 ## Deploy to Google Cloud Run
+
+If you choose to use GCP for this here is some getting started help. You can look at the github action to see some of the env params and VM settings we needed to use.
 
 1. [install gcloud](https://cloud.google.com/sdk/docs/install)
 2. [quickstart for Python](https://cloud.google.com/run/docs/quickstarts/build-and-deploy/deploy-python-service)
 
-To deploy from source
-```python
-gcloud run deploy baldrick --source .
-```
-
-Using the Google UI to set up secrets was easiest for us.
-
-Configure secret access:
-```bash
-gcloud run services update baldrick --set-secrets="OPENAI_API_KEY=OPENAI_API_KEY:latest,SLACK_SIGNING_SECRET=SLACK_SIGNING_SECRET:latest,SLACK_BOT_TOKEN=SLACK_BOT_TOKEN:latest" --no-cpu-throttling --service-account=baldrick@baldrick.iam.gserviceaccount.com  --memory=2Gi --set-env-vars=PROJECT_ID=PROJECT_ID,DATASET=DATASET,TABLE=TABLE
-```
-
+You'll need to set up networking as well. This [tutorial](https://codelabs.developers.google.com/connecting-to-private-cloudsql-from-cloud-run) has the essentials for connecting cloud run to cloud sql using a private IP address and VPC peering.
 
 If you're going to set up CICD with github actions, note that the permissions you actually need differ from the [instructions](https://github.com/google-github-actions/deploy-cloudrun)
 
