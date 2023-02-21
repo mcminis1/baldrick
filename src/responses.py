@@ -103,7 +103,8 @@ class VALID_QUERY_RESPONSE:
             section = {"type": "section", "fields": fields}
             pre_result.extend(section)
 
-        return pre_result.extend(post_result)
+        pre_result.extend(post_result)
+        return pre_result
 
     def get_json(self):
         return {"response_type": "in_channel", "blocks": self._create_result_blocks()}
