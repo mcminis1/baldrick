@@ -72,7 +72,7 @@ class VALID_QUERY_RESPONSE:
                                 "emoji": True,
                             },
                             "style": "primary",
-                            "value": "True",
+                            "value": bq_return_value,
                             "action_id": "results_approved",
                         },
                         {
@@ -83,7 +83,7 @@ class VALID_QUERY_RESPONSE:
                                 "emoji": True,
                             },
                             "style": "danger",
-                            "value": "False",
+                            "value": bq_return_value,
                             "action_id": "results_rejected",
                         },
                     ],
