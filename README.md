@@ -25,12 +25,12 @@ Online
 Some items that could be on the roadmap depending on interest:
 - Auto-infer the schema.
 - Generalize to Snowflake and Redshift
-- Add support for Discord instead of Slack
+- Add support for Discord
 - Automatically index (business question, SQL queries) as examples when users approve them.
 - Schema migration layer for SQL queries
 - Support for Cohere and AI21 LLMs.
 
-If you are interested in extending the functionality, or want to use it for something, please reach out to the maintainers. We'd be glad to consult with you.
+If you are interested in extending the functionality, or want to use it for something, please reach out to the maintainers.
 
 ## Setup
 
@@ -42,7 +42,7 @@ You'll need to set up an OpenAI account and generate an API key.
 
 You'll need a postgres db (though it would be easy to generalize to another db). You will also need to edit the alembic.ini file so the username/password/host are all right for your db.
 
-You'll need ot use `gcloud` to set up credentials and your project for BigQuery. The initial steps in the following section go over this part.
+You'll need to use `gcloud` to set up credentials and your project for BigQuery. The initial steps in the following section go over this part.
 
 You should then be able to spin up a local server.
 ```bash
