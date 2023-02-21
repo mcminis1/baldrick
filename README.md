@@ -1,7 +1,15 @@
 
 ## Baldrick
 
-Baldrick is your friends BI chatbot! Currently Baldrick is a Proof-of-Concept; only useful for a very specific set of users. It's set up to work on slack, with BigQuery, and the [activity schema 2.0](https://github.com/ActivitySchema/ActivitySchema/blob/main/2.0.md).
+Baldrick is your friends BI chatbot! Currently Baldrick is a Proof-of-Concept.
+
+Current tech stack:
+1. Communicates with users via slack.
+2. Runs queries on BigQuery.
+3. Restricted to querying an [activity schema 2.0](https://github.com/ActivitySchema/ActivitySchema/blob/main/2.0.md).
+4. Results and logging are fone on Postgres.
+5. OpenAI text-davinci-003 is used to generate SQL.
+6. The `sentence-transformers` package is used to compute embeddings.
 
 ### How it works
 
@@ -31,6 +39,7 @@ Some items that could be on the road map depending on interest:
 - Schema migration layer for SQL queries.
 - Support for Cohere and AI21 LLMs.
 - Refine ambiguous queries with dialogue.
+- Use postgres vector store for embedding queries + KNN search.
 
 If you are interested in extending the functionality, or want to use it for something, please reach out to the maintainers.
 
