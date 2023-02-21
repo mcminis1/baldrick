@@ -101,7 +101,6 @@ async def handle_slash_baldrick(ack, command, respond, context):
 @app.action("results_approved")
 async def results_approved(ack, body, respond):
     await ack()
-    logging.debug(body)
 
     user_id = body["user"]["id"]
     value_json = json.loads(body["actions"][0]["value"])
@@ -109,7 +108,8 @@ async def results_approved(ack, body, respond):
     async with session_maker() as session:
         user_question = await session.execute(
             select(UserQuestions).where(UserQuestions.id == session_id)
-        ).first()
+        )
+        user_question = user_question[0]
         user_question.marked_bad = True
         session.add(user_question)
         # We commit it first to get the created_on right. If anything dies, we'll have a record of what started it.
@@ -119,7 +119,7 @@ async def results_approved(ack, body, respond):
         {
             "response_type": "in_channel",
             "replace_original": False,
-            "text": f"<@{user_id}> clicked results_approved! (in_channel)",
+            "text": f"<@{user_id}> clicked results_approved!",
         }
     )
     # ephemeral / kwargs
@@ -132,15 +132,15 @@ async def results_approved(ack, body, respond):
 @app.action("results_rejected")
 async def results_rejected(ack, body, respond):
     await ack()
-    logging.debug(body)
 
     user_id = body["user"]["id"]
     value_json = json.loads(body["actions"][0]["value"])
     session_id = value_json["session_id"]
     async with session_maker() as session:
         user_question = await session.execute(
-            select(UserQuestions).where(UserQuestions.id == session_id).first()
+            select(UserQuestions).where(UserQuestions.id == session_id)
         )
+        user_question = user_question[0]
         user_question.marked_bad = True
         session.add(user_question)
         # We commit it first to get the created_on right. If anything dies, we'll have a record of what started it.
@@ -151,7 +151,7 @@ async def results_rejected(ack, body, respond):
         {
             "response_type": "in_channel",
             "replace_original": False,
-            "text": f"<@{user_id}> clicked results_rejected! (in_channel)",
+            "text": f"<@{user_id}> clicked results_rejected!",
         }
     )
     # ephemeral / kwargs
@@ -170,8 +170,9 @@ async def view_bigqeury(ack, body, respond):
     session_id = value_json["session_id"]
     async with session_maker() as session:
         user_question = await session.execute(
-            select(UserQuestions).where(UserQuestions.id == session_id).first()
+            select(UserQuestions).where(UserQuestions.id == session_id)
         )
+        user_question = user_question[0]
         user_question.viewed_query = True
         session.add(user_question)
         # We commit it first to get the created_on right. If anything dies, we'll have a record of what started it.
