@@ -106,10 +106,10 @@ async def results_approved(ack, body, respond):
     value_json = json.loads(body["actions"][0]["value"])
     session_id = value_json["session_id"]
     async with session_maker() as session:
-        user_question = await session.execute(
+        user_question = await session.scalars(
             select(UserQuestions).where(UserQuestions.id == session_id)
         )
-        user_question = user_question[0]
+        user_question = user_question.first()
         user_question.marked_bad = True
         session.add(user_question)
         # We commit it first to get the created_on right. If anything dies, we'll have a record of what started it.
@@ -137,10 +137,10 @@ async def results_rejected(ack, body, respond):
     value_json = json.loads(body["actions"][0]["value"])
     session_id = value_json["session_id"]
     async with session_maker() as session:
-        user_question = await session.execute(
+        user_question = await session.scalars(
             select(UserQuestions).where(UserQuestions.id == session_id)
         )
-        user_question = user_question[0]
+        user_question = user_question.first()
         user_question.marked_bad = True
         session.add(user_question)
         # We commit it first to get the created_on right. If anything dies, we'll have a record of what started it.
@@ -169,10 +169,10 @@ async def view_bigqeury(ack, body, respond):
     value_json = json.loads(body["actions"][0]["value"])
     session_id = value_json["session_id"]
     async with session_maker() as session:
-        user_question = await session.execute(
+        user_question = await session.scalars(
             select(UserQuestions).where(UserQuestions.id == session_id)
         )
-        user_question = user_question[0]
+        user_question = user_question.first()
         user_question.viewed_query = True
         session.add(user_question)
         # We commit it first to get the created_on right. If anything dies, we'll have a record of what started it.
