@@ -21,7 +21,7 @@ from .responses import VALID_QUERY_RESPONSE, INVALID_QUERY_RESPONSE, RETURN_BQ_S
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 # this makes it easier to curl the route and test functionality locally
-local_deployment = os.environ.get("DB_HOST") == 'localhost'
+local_deployment = os.environ.get("DB_HOST") == "localhost"
 verify_requests = True
 if local_deployment:
     verify_requests = False
@@ -57,13 +57,11 @@ async def handle_slash_baldrick(ack, command, respond, context):
     )
     logging.debug(context)
     async with session_maker() as session:
-
         session.add(new_user_question)
         # We commit it first to get the created_on right. If anything dies, we'll have a record of what started it.
         await session.commit()
         await session.refresh(new_user_question)
         session.add(new_user_question)
-
 
         activities = await get_relevant_activities(user_question)
         query = await get_sql_query_with_examples(user_question, activities)
@@ -73,25 +71,32 @@ async def handle_slash_baldrick(ack, command, respond, context):
                 user_question, activities, query_plan, query_errors
             )
             query_plan, query_errors = get_query_plan(query)
-        new_user_question.query=query
-        new_user_question.query_plan=query_plan
-        new_user_question.query_errors=query_errors
+        new_user_question.query = query
+        new_user_question.query_plan = query_plan
+        new_user_question.query_errors = query_errors
 
         if query_errors is None:
             data = run_query(query)
             query_explanation = await get_query_explanation(user_question, query, data)
 
-            new_user_question.was_valid=True
-            new_user_question.query_explanation=query_explanation
-            await respond(
+            q_response = await respond(
                 VALID_QUERY_RESPONSE(
                     user_question, query, query_explanation, data, new_user_question.id
                 ).get_json()
             )
+            logging.debug(f"response: {q_response.status_code} - {q_response.body}")
+
+            new_user_question.was_valid = True
+            new_user_question.query_explanation = query_explanation
+            await session.commit()
         else:
-            new_user_question.was_valid=True
-            await respond(INVALID_QUERY_RESPONSE(user_question, query).get_json())
-        await session.commit()
+            q_response = await respond(
+                INVALID_QUERY_RESPONSE(user_question, query).get_json()
+            )
+            logging.debug(f"response: {q_response.status_code} - {q_response.body}")
+
+            new_user_question.was_valid = False
+            await session.commit()
 
 
 @app.action("results_approved")
@@ -103,7 +108,9 @@ async def results_approved(ack, body, respond):
     value_json = json.loads(body["actions"][0]["value"])
     session_id = value_json["session_id"]
     async with session_maker() as session:
-        user_question = await session.execute(select(UserQuestions).where(UserQuestions.id == session_id)).first()
+        user_question = await session.execute(
+            select(UserQuestions).where(UserQuestions.id == session_id)
+        ).first()
         user_question.marked_bad = True
         session.add(user_question)
         # We commit it first to get the created_on right. If anything dies, we'll have a record of what started it.
@@ -118,7 +125,8 @@ async def results_approved(ack, body, respond):
     )
     # ephemeral / kwargs
     await respond(
-        replace_original=False, text=":white_check_mark: Done!",
+        replace_original=False,
+        text=":white_check_mark: Done!",
     )
 
 
@@ -131,7 +139,9 @@ async def results_rejected(ack, body, respond):
     value_json = json.loads(body["actions"][0]["value"])
     session_id = value_json["session_id"]
     async with session_maker() as session:
-        user_question = await session.execute(select(UserQuestions).where(UserQuestions.id == session_id)).first()
+        user_question = await session.execute(
+            select(UserQuestions).where(UserQuestions.id == session_id)
+        ).first()
         user_question.marked_bad = True
         session.add(user_question)
         # We commit it first to get the created_on right. If anything dies, we'll have a record of what started it.
@@ -147,7 +157,8 @@ async def results_rejected(ack, body, respond):
     )
     # ephemeral / kwargs
     await respond(
-        replace_original=False, text=":white_check_mark: Done!",
+        replace_original=False,
+        text=":white_check_mark: Done!",
     )
 
 
@@ -159,21 +170,26 @@ async def view_bigqeury(ack, body, respond):
     value_json = json.loads(body["actions"][0]["value"])
     session_id = value_json["session_id"]
     async with session_maker() as session:
-        user_question = await session.execute(select(UserQuestions).where(UserQuestions.id == session_id)).first()
+        user_question = await session.execute(
+            select(UserQuestions).where(UserQuestions.id == session_id)
+        ).first()
         user_question.viewed_query = True
         session.add(user_question)
         # We commit it first to get the created_on right. If anything dies, we'll have a record of what started it.
         await session.commit()
 
     # in_channel / dict
-    await respond(RETURN_BQ_STATEMENT(value_json['query']).get_json())
+    await respond(RETURN_BQ_STATEMENT(value_json["query"]).get_json())
 
     # ephemeral / kwargs
     await respond(
-        replace_original=False, text=":white_check_mark: Done!",
+        replace_original=False,
+        text=":white_check_mark: Done!",
     )
 
+
 api = FastAPI()
+
 
 @api.post("/slack/events")
 async def events_endpoint(req: Request):

@@ -11,7 +11,11 @@ class VALID_QUERY_RESPONSE:
 
     def _create_result_blocks(self):
         bq_return_value = json.dumps(
-            {"question": self.user_question, "query": self.llm_query, "session_id": self.session_id}
+            {
+                "question": self.user_question,
+                "query": self.llm_query,
+                "session_id": self.session_id,
+            }
         )
 
         pre_result = [

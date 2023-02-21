@@ -20,6 +20,18 @@ Online
 7. The query is run and results are returned.
 8. The business problem, query plan, SQL, and data are used in another prompt which is sent to GPT-3 for a "human readable" explanation of how the query was done and what the results are.
 
+### Todo
+
+Some items that could be on the roadmap depending on interest:
+- Auto-infer the schema.
+- Generalize to Snowflake and Redshift
+- Add support for Discord instead of Slack
+- Automatically index (business question, SQL queries) as examples when users approve them.
+- Schema migration layer for SQL queries
+- Support for Cohere and AI21 LLMs.
+
+If you are interested in extending the functionality, or want to use it for something, please reach out to the maintainers. We'd be glad to consult with you.
+
 ## Setup
 
 There is a fair amount of setup to get this running. You need: a slack app, a google project and bigquery, a postgres db, and an OpenAI API account key.

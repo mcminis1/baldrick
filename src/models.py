@@ -5,6 +5,7 @@ from datetime import datetime
 
 Base = declarative_base()
 
+
 class UserQuestions(Base):
     __tablename__ = "user_questions"
     id = Column(Integer, primary_key=True)
@@ -22,4 +23,6 @@ class UserQuestions(Base):
     viewed_query = Column(Boolean, default=False)
 
     created_at = Column(DateTime(timezone=False), default=datetime.utcnow)
-    updated_at = Column(DateTime(timezone=False), default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_at = Column(
+        DateTime(timezone=False), default=datetime.utcnow, onupdate=datetime.utcnow
+    )
