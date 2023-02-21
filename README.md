@@ -11,7 +11,7 @@ Current tech stack:
 5. OpenAI text-davinci-003 is used to generate SQL.
 6. The `sentence-transformers` package is used to compute embeddings.
 
-### How it works
+### How it works: The User Experience
 
 User Interface:
 
@@ -35,6 +35,8 @@ User Interface:
 
 ![View SQL](img/slack_example_1_query.png?raw=true "Baldrick showing you the SQL query")
 
+
+### How it works: The Back End
 
 Offline
 1. A collection of (business question, SQL query) pairs is collected
