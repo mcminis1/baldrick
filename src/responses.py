@@ -2,15 +2,16 @@ import json
 
 
 class VALID_QUERY_RESPONSE:
-    def __init__(self, user_question, llm_query, llm_query_plan, data):
+    def __init__(self, user_question, llm_query, llm_query_plan, data, session_id):
         self.llm_query = llm_query
         self.llm_query_plan = llm_query_plan
         self.data = data
         self.user_question = user_question
+        self.session_id = session_id
 
     def _create_result_blocks(self):
         bq_return_value = json.dumps(
-            {"question": self.user_question, "query": self.llm_query}
+            {"question": self.user_question, "query": self.llm_query, "session_id": self.session_id}
         )
 
         pre_result = [
